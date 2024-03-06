@@ -43,15 +43,15 @@ class SelectUsersButtons(discord.ui.View):
 
     @discord.ui.button(label="活動連絡DMを受け取る弦楽器団員", emoji="🎻", style=discord.ButtonStyle.primary)
     async def string_callback(self, button, interaction):
-        await verify_gas_send_dm(type='strings', embed=self.embed, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='strings', embed=self.embed, send_type=self.send_type, interaction=interaction)
 
     @discord.ui.button(label="活動連絡DMを受け取る管打楽器団員", emoji="🎺", style=discord.ButtonStyle.primary)
     async def wind_callback(self, button, interaction):
-        await verify_gas_send_dm(type='winds', embed=self.embed, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='winds', embed=self.embed, send_type=self.send_type, interaction=interaction)
 
     @discord.ui.button(label="活動連絡DMを受け取る管弦楽団員", emoji="🎼", style=discord.ButtonStyle.primary)
     async def orchestra_callback(self, button, interaction):
-        await verify_gas_send_dm(type='orchestra', embed=self.embed, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='orchestra', embed=self.embed, send_type=self.send_type, interaction=interaction)
 
 #-------------------------------------------------------------
         
