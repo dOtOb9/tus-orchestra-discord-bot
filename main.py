@@ -10,4 +10,4 @@ async def on_ready():
     print("再起動しました。")
 
 
-bot.run(getenv("DISCORD_BOT_TOKEN"))
+bot.run(getenv("DISCORD_TOKEN"))
