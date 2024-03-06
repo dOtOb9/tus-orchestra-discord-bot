@@ -74,9 +74,9 @@ async def verify_send_dm_text(member_list, embed, send_type, interaction):
 
 async def verify_gas_send_dm(mode, embed, send_type, interaction):
     await interaction.response.send_message("送信先を取得しています...", ephemeral=True)
-    json_data =  await can_send_activity_dm(type)
+    json_data =  await can_send_activity_dm(mode)
 
-    if type(json_data) == str:
+    if type(json_data) is str:
         embed = discord.Embed(
             title=json_data,
             color=discord.Color.orange(),
