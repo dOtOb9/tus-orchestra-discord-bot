@@ -91,6 +91,8 @@ async def verify_gas_send_dm(mode, embed, send_type, interaction):
 
     member_id_list = list(json_data['member_list'])
 
+    print(member_id_list)
+
     member_list = []
 
     for member in bot.guilds[0].members:
