@@ -5,11 +5,11 @@ from gas.post import user_post
         
 @bot.event
 async def on_member_update(before, after):
-    member_update(after)
+    await member_update(after)
 
 @bot.event
 async def on_member_join(member):
-    member_update(member)
+    await member_update(member)
 
 async def member_update(member):
     div_point = member.display_name.find(".")
