@@ -86,7 +86,7 @@ async def verify_gas_send_dm(mode, embed, send_type, interaction):
             icon_url=getenv("SPREADSHEET_ICON_URL"),
             url=getenv("SPREADSHEET_URL"),  
         )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.user.send(embed=embed, ephemeral=True)
         return
 
     member_id_list = list(json_data['member_list'])
