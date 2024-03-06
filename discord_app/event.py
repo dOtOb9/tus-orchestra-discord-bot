@@ -26,7 +26,7 @@ async def member_update(member):
         name = member.display_name[div_point+1:]
 
     json_data = {
-        "type": "edit_user",
+        "mode": "edit_user",
         "name": name,
         "part": part,
         "id": str(member.id),
