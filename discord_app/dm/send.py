@@ -99,9 +99,11 @@ async def verify_gas_send_dm(mode, embed, send_type, interaction):
         if member.id in member_id_list:
             member_list.append(member)
 
-    if embed.colour.value == discord.Colour.from_rgb(0, 255, 0): # 埋め込みテキストの色が緑の場合 → つまり、活動連絡の場合
+    if embed.colour == discord.Colour.from_rgb(0, 255, 0): # 埋め込みテキストの色が緑の場合 → つまり、活動連絡の場合
         attend_button = True
     else:
         attend_button = False
+
+    print(attend_button)
 
     await verify_send_dm(member_list, embed, send_type, interaction, attend_button)
