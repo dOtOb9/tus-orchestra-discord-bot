@@ -34,3 +34,16 @@ async def member_update(member):
     }
 
     await user_post(json_data)
+
+@bot.event
+async def on_ready():
+    for member in bot.guilds[0].members:
+        match member.id:
+            case 965544842576949248:
+                member.nick = 'Vn.林 颯太朗'
+                break
+            case 943171796755181621:
+                member.nick = 'Va.成田真衣'
+                break
+            case 855780754360238132:
+                member.nick = 'Vn.星野 真輝'
