@@ -96,7 +96,7 @@ async def verify_gas_send_dm(mode, embed, send_type, interaction):
     member_list = []
 
     for member in bot.guilds[0].members:
-        if member.id in member_id_list:
+        if str(member.id) in member_id_list:
             member_list.append(member)
 
     if embed.colour == discord.Colour.from_rgb(0, 255, 0): # 埋め込みテキストの色が緑の場合 → つまり、活動連絡の場合
