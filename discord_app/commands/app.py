@@ -6,6 +6,7 @@ from discord_app.ch.dbx import FileRequestModal
 from discord_app.dm.general import DmGeneralModal
 from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
+from discord_app.commands.user import get_user_info
 
 
 #-------------------------------------------------------------
@@ -122,6 +123,16 @@ async def server(ctx):
         text = "Railway",
     )
     await ctx.respond(embed=embed, ephemeral=True)
+
+#-------------------------------------------------------------
+    
+set = bot.command_group("set")
+
+#-------------------------------------------------------------
+
+@set.command(description="自身の設定を表示します。")
+async def get_me_info(ctx):
+    await get_user_info(ctx, ctx.user)
 
 #-------------------------------------------------------------
 

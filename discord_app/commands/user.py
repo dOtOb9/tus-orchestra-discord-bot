@@ -6,7 +6,7 @@ from discord_app.bot import bot
 from gas.get import user_info
         
 @bot.user_command(name="ユーザー情報を取得する")
-async def user_get_info(ctx, member: discord.Member):
+async def get_user_info(ctx, member: discord.Member):
     if member.bot: await ctx.respond("ボットの情報は取得できません。", ephemeral=True)
 
     author = ctx.author

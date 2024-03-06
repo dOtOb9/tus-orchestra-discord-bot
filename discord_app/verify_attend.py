@@ -10,7 +10,7 @@ class AttendAuthButton(discord.ui.View):
         super().__init__()
 
         self.disable_on_timeout = True
-        self.timeout = 60 * 24 * 30 # 30日間有効
+        self.timeout = 60 * 60 * 24 * 30 # 30日間有効
 
     @discord.ui.button(label="出席認証", style=discord.ButtonStyle.primary)
     async def attend_auth(self, button, interaction):
