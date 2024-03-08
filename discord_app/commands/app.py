@@ -136,7 +136,7 @@ set = bot.create_group("set")
 async def activity_dm(ctx, types: discord.Option(str, choices=["受信する", "受信しない"])):
     Bool = types == "受信する"
 
-    await ctx.respond("設定を更新しました。\n\n設定を確認するには、`/set get_me_info`を実行してください。", ephemeral=True)
+    await ctx.respond(f"設定を「{types}」に更新しました。\n\n設定を確認するには、`/status`と送信してください。", ephemeral=True)
     await can_send_activity_dm(ctx.user.id, Bool)
 
 #-------------------------------------------------------------
