@@ -25,12 +25,12 @@ async def on_member_join(member):
 async def on_ready():
     print("再起動しました。")
 
-    while True:
-        now = dt.datetime.now()
-
-        if (now.hour == 5):
-            await send_attend_code()
-            await asyncio.sleep(60 * 60) # 1時間
+    #while True:
+    #    now = dt.datetime.now()
+    #
+    #    if (now.hour == 5):
+    #        await send_attend_code()
+    #        await asyncio.sleep(60 * 60) # 1時間
 
 #================================================================================================
 async def member_update(member):
