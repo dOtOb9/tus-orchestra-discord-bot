@@ -1,7 +1,5 @@
 import discord
 
-from discord_app.bot import bot 
-
 
 class SelectChannelButtons(discord.ui.View):
     def __init__(self, embeds, *args, **kwargs):
