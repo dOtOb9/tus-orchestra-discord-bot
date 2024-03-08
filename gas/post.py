@@ -1,14 +1,17 @@
 import requests
 import json
+from dotenv import load_dotenv
 from os import getenv
+
+load_dotenv()
 
 URL = getenv("SPREADSHEET_EXEC_URL")
 
+headers = {
+    "Content-Type" : "application/json"
+}
 
 async def user_post(json_data):
-    headers = {
-        "Content-Type" : "application/json"
-    }
 
     response = requests.post(URL, headers=headers, data=json.dumps(json_data))
 
@@ -20,16 +23,21 @@ async def user_post(json_data):
 #-----------------------------------------------------------------------------------
 
 async def generate_activity_date(date_text):
-    params = {
+    json_data = {
         "mode": "generate_activity_date",
         "date_text": date_text,
     }
 
-    response = requests.get(URL, params=params)
-
-    if response.status_code == 200:
-        print(f"generate_activity_date: \n{response.text}")
-    else:
-        print(f"generate_activity_date: \n❌エラーが発生しました。: {response.status_code}")
+    requests.post(URL, headers=headers, data=json.dumps(json_data))
 
 #-----------------------------------------------------------------------------------
+
+async def can_send_activity_dm(id, Bool):
+    json_data = {
+        "mode": "belong_contact_list",
+        "id": str(id),
+        "bool": str(Bool).upper(),
+    }
+
+    requests.post(URL, headers=headers, data=json.dumps(json_data))
+

@@ -41,15 +41,23 @@ class SelectUsersButtons(discord.ui.View):
             ephemeral=True
         )
 
-    @discord.ui.button(label="活動連絡DMを受け取る弦楽器団員", emoji="🎻", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="活動連絡DMを受け取る弦楽器団員", emoji="🎻",row=1, style=discord.ButtonStyle.primary)
     async def string_callback(self, button, interaction):
         await verify_gas_send_dm(mode='strings', embed=self.embed, send_type=self.send_type, interaction=interaction)
 
-    @discord.ui.button(label="活動連絡DMを受け取る管打楽器団員", emoji="🎺", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="活動連絡DMを受け取る金管楽器団員", emoji="🎺",row=2, style=discord.ButtonStyle.primary)
     async def wind_callback(self, button, interaction):
-        await verify_gas_send_dm(mode='winds', embed=self.embed, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='brass', embed=self.embed, send_type=self.send_type, interaction=interaction)
 
-    @discord.ui.button(label="活動連絡DMを受け取る管弦楽団員", emoji="🎼", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="活動連絡DMを受け取る木管楽器団員", emoji="🎹",row=2, style=discord.ButtonStyle.primary)
+    async def woodwind_callback(self, button, interaction):
+        await verify_gas_send_dm(mode='woodwind', embed=self.embed, send_type=self.send_type, interaction=interaction)
+
+    @discord.ui.button(label="活動連絡DMを受け取る打楽器団員", emoji="🥁",row=3, style=discord.ButtonStyle.primary)
+    async def percussion_callback(self, button, interaction):
+        await verify_gas_send_dm(mode='percussion', embed=self.embed, send_type=self.send_type, interaction=interaction)
+
+    @discord.ui.button(label="活動連絡DMを受け取る管弦楽団員", emoji="🎼",row=4, style=discord.ButtonStyle.primary)
     async def orchestra_callback(self, button, interaction):
         await verify_gas_send_dm(mode='orchestra', embed=self.embed, send_type=self.send_type, interaction=interaction)
 

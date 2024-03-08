@@ -1,5 +1,8 @@
 import requests
+from dotenv import load_dotenv
 from os import getenv
+
+load_dotenv()
 
 URL = getenv("SPREADSHEET_EXEC_URL")
 
@@ -43,5 +46,4 @@ async def can_send_attend_code():
     response = requests.get(URL, params=params)
 
     if response.status_code == 200:
-        return response.text
-    
+        return response.json()

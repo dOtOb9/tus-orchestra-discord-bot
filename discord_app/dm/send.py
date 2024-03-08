@@ -1,4 +1,5 @@
 import discord
+from dotenv import load_dotenv
 from os import getenv
 
 from discord_app.bot import bot
@@ -6,7 +7,8 @@ from discord_app.verify_attend import AttendAuthButton
 from gas.get import can_send_activity_dm   
 from gas.post import generate_activity_date
 
-        
+load_dotenv()
+
 class SendDmButton(discord.ui.View):
     def __init__(self, embed, member_list, name_list_text, send_type, attend_button, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -34,12 +36,14 @@ class SendDmButton(discord.ui.View):
         button.label = "送信済み"
         await interaction.response.edit_message(view=self)
 
+        if self.attend_button:
+            date_value = self.embed.fields[0].value
+            date_text = date_value[:date_value.find("(")]
+            await generate_activity_date(date_text)
+
         for member in self.member_list:
             if self.attend_button:
                 # 活動日から出欠表の列を生成する
-                date_value = self.embed.fields[0].value
-                date_text = date_value[:date_value.find("(")]
-                await generate_activity_date(date_text)
  
                 await member.send(message, embed=self.embed, view=AttendAuthButton())
             else:

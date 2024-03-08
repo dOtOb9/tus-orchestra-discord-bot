@@ -8,6 +8,8 @@ from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
 
+from gas.post import can_send_activity_dm
+
 
 #-------------------------------------------------------------
 
@@ -129,9 +131,18 @@ async def server(ctx):
 set = bot.create_group("set")
 
 #-------------------------------------------------------------
+    
+@set.command(description="乗り番連絡DMを受信するかどうかを設定します。")
+async def activity_dm(ctx, types: discord.Option(str, choices=["受信する", "受信しない"])):
+    Bool = types == "受信する"
 
-@set.command(description="自身の設定を表示します。")
-async def get_me_info(ctx):
+    await ctx.respond("設定を更新しました。\n\n設定を確認するには、`/set get_me_info`を実行してください。", ephemeral=True)
+    await can_send_activity_dm(ctx.user.id, Bool)
+
+#-------------------------------------------------------------
+
+@bot.slash_command(description="自身の設定を表示します。")
+async def status(ctx):
     await get_user_info(ctx, ctx.user)
 
 #-------------------------------------------------------------
