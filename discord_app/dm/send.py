@@ -1,5 +1,4 @@
 import discord
-from dotenv import load_dotenv
 from os import getenv
 
 from discord_app.bot import bot
@@ -7,7 +6,6 @@ from discord_app.verify_attend import AttendAuthButton
 from gas.get import can_send_activity_dm   
 from gas.post import generate_activity_date
 
-load_dotenv()
 
 class SendDmButton(discord.ui.View):
     def __init__(self, embed, member_list, name_list_text, send_type, attend_button, *args, **kwargs) -> None:
