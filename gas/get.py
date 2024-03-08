@@ -1,8 +1,5 @@
 import requests
-from dotenv import load_dotenv
 from os import getenv
-
-load_dotenv()
 
 URL = getenv("SPREADSHEET_EXEC_URL")
 
