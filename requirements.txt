@@ -2,3 +2,4 @@ DateTime==5.4
 dropbox==11.36.2
 py-cord==2.4.1
 schedule==1.2.1
+dotenv==16.4.5
