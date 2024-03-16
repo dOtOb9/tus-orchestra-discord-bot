@@ -1,3 +1,5 @@
+from os import getenv
+
 import discord
 import datetime as dt
 
@@ -17,6 +19,7 @@ class DmActivityModal(discord.ui.Modal):
         self.actibity_time_text = f"{start_dt.hour}:{start_dt.minute:02} ~ {finish_dt.hour}:{finish_dt.minute:02}"
         self.meeting_time_text = f"**{meeting_dt.hour}:{meeting_dt.minute:02} 集合**"
 
+        self.google_calendar_plan_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&dates={start_dt.strftime('%Y%m%dT%H%M%S')}/{finish_dt.strftime('%Y%m%dT%H%M%S')}"
     
         self.add_item(discord.ui.InputText(label="タイトル", placeholder="練習内容を入力"))
         self.add_item(discord.ui.InputText(label="会場", placeholder="GoogleMapで検索できるワードを推奨"))
@@ -28,7 +31,7 @@ class DmActivityModal(discord.ui.Modal):
         place = self.children[1].value
         content = self.children[2].value
 
-        embed = discord.Embed(
+        main_embed = discord.Embed(
             title=title,
             colour = discord.Color.from_rgb(0, 255, 0),
             fields = [
@@ -55,17 +58,47 @@ class DmActivityModal(discord.ui.Modal):
             ],
             )
         
-        embed.set_author(
+        main_embed.set_author(
             name = interaction.user.display_name, 
             icon_url = interaction.user.display_avatar,
             url = interaction.user.jump_url,
             )
         
+        #------------------------------------------------------------------
+
+        google_map_embed = discord.Embed(
+            title = "現在地からの経路を検索",
+            url = f"https://www.google.com/maps/dir/?api=1&destination={place}",
+            colour = discord.Color.dark_green()
+        )
+
+        google_map_embed.set_footer(
+            text = "Google Map",
+            icon_url = getenv("GOOGLE_MAP_ICON_URL"),
+        )
+
+        #--------------------------------------------------------------------
+
+        google_calendar_embed = discord.Embed(
+            title = "カレンダーに追加",
+            url = self.google_calendar_plan_url + f"&text={title}&location={place}&details={content}",
+            colour = discord.Color.dark_blue()
+        )
+
+        google_calendar_embed.set_footer(
+            text = "Google Calendar", 
+            icon_url=getenv("GOOGLE_CALENDAR_ICON_URL"), 
+        )
+
+        #---------------------------------------------------------------------
+
+        embeds = [main_embed, google_map_embed, google_calendar_embed]
+
         await interaction.response.send_message(
             "送信先を選んでください。",
-            view=SelectUsersButtons(embed=embed, send_type=self.send_type),
+            view=SelectUsersButtons(embeds=embeds, send_type=self.send_type),
             ephemeral=True,
-            embed=embed
+            embeds=embeds,
             )
         
 #-------------------------------------------------------------

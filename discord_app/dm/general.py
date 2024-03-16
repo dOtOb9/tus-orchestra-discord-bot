@@ -29,7 +29,7 @@ class DmGeneralModal(discord.ui.Modal):
 
         await interaction.response.send_message(
             "送信先を選んでください。",
-            view=SelectUsersButtons(embed=embed, send_type=self.send_type),
+            view=SelectUsersButtons(embeds=[embed], send_type=self.send_type),
             ephemeral=True,
-            embed=embed
+            embeds=[embed]
         )

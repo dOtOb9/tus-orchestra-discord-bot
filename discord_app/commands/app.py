@@ -1,15 +1,25 @@
+from os import getenv
+
 import discord
 
 from discord_app.bot import bot
 from discord_app.ch.general import ChannelGeneralModal
-from discord_app.ch.dbx import FileRequestModal
 from discord_app.dm.general import DmGeneralModal
 from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
+from discord_app.access_dropbox import verifyAccessTokenButton
 
 from gas.post import can_send_activity_dm
 
+from dropbox_app import startDropboxOAuth
+
+github_logo_url = "https://raw.githubusercontent.com/dOtOb9/tus-orchestra-discord-bot/main/image/github-mark-white.png"
+author_avatar_github_url = "https://avatars.githubusercontent.com/u/124516137?v=4"
+author_github_url = "https://github.com/dOtOb9"
+repo_url = "https://github.com/dOtOb9/tus-orchestra-discord-bot"
+server_execution_log = "https://railway.app/project/149f3467-5a17-4aaf-b362-460be8e9a670/logs"
+Railway_logo_url = "https://railway.app/brand/logo-light.png"
 
 #-------------------------------------------------------------
 
@@ -27,11 +37,6 @@ async def normal(ctx):
 async def alert(ctx):
     await ctx.send_modal(ChannelGeneralModal(title="緊急連絡フォーム", colour=(255, 0, 0))) # 赤色
 
-#-------------------------------------------------------------
-    
-@channel.command(description="チャンネルにファイルを共有します。")
-async def upload_file(ctx):
-    await ctx.send_modal(FileRequestModal(title="ファイル共有フォーム"))
 
 #-------------------------------------------------------------
     
@@ -69,13 +74,73 @@ async def alert(
     await ctx.send_modal(DmGeneralModal(title="緊急連絡フォーム", send_type = send_type, colour=(255, 0, 0))) # 赤色
 
 #-------------------------------------------------------------
+
+#-------------------------------------------------------------
     
-github_logo_url = "https://raw.githubusercontent.com/dOtOb9/tus-orchestra-discord-bot/main/image/github-mark-white.png"
-author_avatar_github_url = "https://avatars.githubusercontent.com/u/124516137?v=4"
-author_github_url = "https://github.com/dOtOb9"
-repo_url = "https://github.com/dOtOb9/tus-orchestra-discord-bot"
-server_execution_log = "https://railway.app/project/149f3467-5a17-4aaf-b362-460be8e9a670/logs"
-Railway_logo_url = "https://railway.app/brand/logo-light.png"
+set = bot.create_group("set")
+
+#-------------------------------------------------------------
+    
+@set.command(description="乗り番連絡DMを受信するかどうかを設定します。")
+async def activity_dm(ctx, types: discord.Option(str, choices=["受信する", "受信しない"])):
+    Bool = types == "受信する"
+
+    await ctx.respond(f"設定を「{types}」に更新しました。\n\n設定を確認するには、`/status`と送信してください。", ephemeral=True)
+    await can_send_activity_dm(ctx.user.id, Bool)
+
+#-------------------------------------------------------------
+    
+@set.command()
+async def access_dropbox(ctx):
+    auth_url, auth_flow = startDropboxOAuth()
+
+    embed = discord.Embed(
+        title = "ここからアクセスコードを取得してください。",
+        description = "DropboxのOAuth認証",
+        url = auth_url,
+    )
+
+    embed.set_footer(
+        text = "Dropbox",
+        icon_url=getenv("DBX_ICON_URL"),
+    )
+
+    await ctx.respond(view=verifyAccessTokenButton(auth_flow), embed=embed, ephemeral=True)
+
+#-------------------------------------------------------------
+
+@bot.slash_command(description="自身の設定を表示します。")
+async def status(ctx):
+    await get_user_info(ctx, ctx.user)
+
+#-------------------------------------------------------------
+
+@bot.slash_command(description="入力したいテキストをプレビューできます。")
+async def preview(ctx):
+    await ctx.send_modal(PreviewModal(title="テキスト表示のプレビュー"))
+
+#-------------------------------------------------------------
+    
+@bot.slash_command(description="使い方ガイドを表示します。")
+async def guide(ctx):
+    embed = discord.Embed(
+        title="使い方ガイド(README.md)",
+        colour=discord.Color.from_rgb(255, 102, 255), # ピンク色
+        url="https://github.com/dOtOb9/tus-orchestra-discord-bot/blob/main/README.md"
+    )
+
+    embed.set_author(
+        name = "dOtOb9",
+        icon_url = author_avatar_github_url,
+        url = author_github_url,
+    )
+
+    embed.set_footer(
+        icon_url = github_logo_url,
+        text = "GitHub",
+    )
+
+    await ctx.respond(embed=embed, ephemeral=True)
 
 #-------------------------------------------------------------
     
@@ -126,50 +191,3 @@ async def server(ctx):
     )
     await ctx.respond(embed=embed, ephemeral=True)
 
-#-------------------------------------------------------------
-    
-set = bot.create_group("set")
-
-#-------------------------------------------------------------
-    
-@set.command(description="乗り番連絡DMを受信するかどうかを設定します。")
-async def activity_dm(ctx, types: discord.Option(str, choices=["受信する", "受信しない"])):
-    Bool = types == "受信する"
-
-    await ctx.respond(f"設定を「{types}」に更新しました。\n\n設定を確認するには、`/status`と送信してください。", ephemeral=True)
-    await can_send_activity_dm(ctx.user.id, Bool)
-
-#-------------------------------------------------------------
-
-@bot.slash_command(description="自身の設定を表示します。")
-async def status(ctx):
-    await get_user_info(ctx, ctx.user)
-
-#-------------------------------------------------------------
-
-@bot.slash_command(description="入力したいテキストをプレビューできます。")
-async def preview(ctx):
-    await ctx.send_modal(PreviewModal(title="テキスト表示のプレビュー"))
-
-#-------------------------------------------------------------
-    
-@bot.slash_command(description="使い方ガイドを表示します。")
-async def guide(ctx):
-    embed = discord.Embed(
-        title="使い方ガイド(README.md)",
-        colour=discord.Color.from_rgb(255, 102, 255), # ピンク色
-        url="https://github.com/dOtOb9/tus-orchestra-discord-bot/blob/main/README.md"
-    )
-
-    embed.set_author(
-        name = "dOtOb9",
-        icon_url = author_avatar_github_url,
-        url = author_github_url,
-    )
-
-    embed.set_footer(
-        icon_url = github_logo_url,
-        text = "GitHub",
-    )
-
-    await ctx.respond(embed=embed, ephemeral=True)

@@ -6,8 +6,8 @@ from gas.post import user_post
 #================================================================================================
 
 class AttendAuthButton(discord.ui.View):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.disable_on_timeout = True
         self.timeout = 60 * 60 * 24 * 30 # 30日間有効

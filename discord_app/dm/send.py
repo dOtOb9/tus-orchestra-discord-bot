@@ -8,11 +8,11 @@ from gas.post import generate_activity_date
 
 
 class SendDmButton(discord.ui.View):
-    def __init__(self, embed, member_list, name_list_text, send_type, attend_button, *args, **kwargs) -> None:
+    def __init__(self, embeds, member_list, name_list_text, send_type, attend_button, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.member_list = member_list
         self.name_list_text = name_list_text
-        self.embed = embed
+        self.embeds = embeds
         self.send_type = send_type
         self.name_list = [member.display_name for member in self.member_list]
         self.attend_button = attend_button
@@ -35,7 +35,7 @@ class SendDmButton(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
         if self.attend_button:
-            date_value = self.embed.fields[0].value
+            date_value = self.embeds[0].fields[0].value # 日付の情報を取得
             date_text = date_value[:date_value.find("(")]
             await generate_activity_date(date_text)
 
@@ -43,14 +43,14 @@ class SendDmButton(discord.ui.View):
             if self.attend_button:
                 # 活動日から出欠表の列を生成する
  
-                await member.send(message, embed=self.embed, view=AttendAuthButton())
+                await member.send(message, embeds=self.embeds, view=AttendAuthButton())
             else:
-                await member.send(message, embed=self.embed)
+                await member.send(message, embeds=self.embeds)
 
 
 #-------------------------------------------------------------
 
-async def verify_send_dm(member_list, embed, send_type, interaction, attend_button=False):
+async def verify_send_dm(member_list, embeds, send_type, interaction, attend_button=False):
     for member in member_list:
         if member.bot:
             member_list.remove(member)
@@ -62,19 +62,19 @@ async def verify_send_dm(member_list, embed, send_type, interaction, attend_butt
         message += "\n受信者には送信先リストは表示されません。"
     await interaction.user.send(
         message,
-        embed = embed,
-        view=SendDmButton(embed, member_list, name_list_text, send_type=send_type, attend_button=attend_button),
+        embeds = embeds,
+        view=SendDmButton(embeds, member_list, name_list_text, send_type=send_type, attend_button=attend_button),
     )
 
 #---------------------------------------------------------------------------------------------------------------
         
-async def verify_send_dm_text(member_list, embed, send_type, interaction):
+async def verify_send_dm_text(member_list, embeds, send_type, interaction):
     await interaction.response.send_message("送信先を確認しています...", ephemeral=True)
-    await verify_send_dm(member_list, embed, send_type, interaction)
+    await verify_send_dm(member_list, embeds, send_type, interaction)
 
 #----------------------------------------------------------------------------------------------------------------
 
-async def verify_gas_send_dm(mode, embed, send_type, interaction):
+async def verify_gas_send_dm(mode, embeds, send_type, interaction):
     await interaction.response.send_message("送信先を取得しています...", ephemeral=True)
     json_data =  await can_send_activity_dm(mode)
 
@@ -93,19 +93,15 @@ async def verify_gas_send_dm(mode, embed, send_type, interaction):
 
     member_id_list = list(json_data['member_list'])
 
-    print(member_id_list)
-
     member_list = []
 
     for member in bot.guilds[0].members:
         if str(member.id) in member_id_list:
             member_list.append(member)
 
-    if embed.colour == discord.Colour.from_rgb(0, 255, 0): # 埋め込みテキストの色が緑の場合 → つまり、活動連絡の場合
+    if embeds[0].colour == discord.Colour.from_rgb(0, 255, 0): # 埋め込みテキストの色が緑の場合 → つまり、活動連絡の場合
         attend_button = True
     else:
         attend_button = False
 
-    print(attend_button)
-
-    await verify_send_dm(member_list, embed, send_type, interaction, attend_button)
+    await verify_send_dm(member_list, embeds, send_type, interaction, attend_button)
