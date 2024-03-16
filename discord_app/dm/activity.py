@@ -1,4 +1,5 @@
 from os import getenv
+from urllib.parse import quote
 
 import discord
 import datetime as dt
@@ -23,7 +24,7 @@ class DmActivityModal(discord.ui.Modal):
     
         self.add_item(discord.ui.InputText(label="タイトル", placeholder="練習内容を入力"))
         self.add_item(discord.ui.InputText(label="会場", placeholder="GoogleMapで検索できるワードを推奨"))
-        self.add_item(discord.ui.InputText(label="備考", value="- 部屋\n\n\n- 練習内容\n\n１コマ目: \n２コマ目", style = discord.InputTextStyle.long, required=False))
+        self.add_item(discord.ui.InputText(label="備考", value="- 部屋\n\n\n- 練習内容\n\n１コマ目：\n２コマ目：\n３コマ目：\n４コマ目：", style = discord.InputTextStyle.long, required=False))
 
 
     async def callback(self, interaction: discord.Interaction):
@@ -68,7 +69,7 @@ class DmActivityModal(discord.ui.Modal):
 
         google_map_embed = discord.Embed(
             title = "現在地からの経路を検索",
-            url = f"https://www.google.com/maps/dir/?api=1&destination={place}",
+            url = f"https://www.google.com/maps/dir/?api=1&destination={quote(place)}",
             colour = discord.Color.dark_green()
         )
 
@@ -81,7 +82,7 @@ class DmActivityModal(discord.ui.Modal):
 
         google_calendar_embed = discord.Embed(
             title = "カレンダーに追加",
-            url = self.google_calendar_plan_url + f"&text={title}&location={place}&details={content}",
+            url = self.google_calendar_plan_url + f"&text={quote(title)}&location={quote(place)}&details={quote(content)}",
             colour = discord.Color.dark_blue()
         )
 
