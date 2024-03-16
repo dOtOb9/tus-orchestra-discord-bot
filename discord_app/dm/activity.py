@@ -23,7 +23,7 @@ class DmActivityModal(discord.ui.Modal):
     
         self.add_item(discord.ui.InputText(label="タイトル", placeholder="練習内容を入力"))
         self.add_item(discord.ui.InputText(label="会場", placeholder="GoogleMapで検索できるワードを推奨"))
-        self.add_item(discord.ui.InputText(label="備考", value="- 部屋\n\n\n- 練習内容\n\n", style = discord.InputTextStyle.long, required=False))
+        self.add_item(discord.ui.InputText(label="備考", value="- 部屋\n\n\n- 練習内容\n\n１コマ目: \n２コマ目", style = discord.InputTextStyle.long, required=False))
 
 
     async def callback(self, interaction: discord.Interaction):
