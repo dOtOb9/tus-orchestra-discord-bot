@@ -3,9 +3,6 @@ from os import getenv, environ
 import dropbox
 from dropbox.oauth import DropboxOAuth2FlowNoRedirect
 
-from dotenv import load_dotenv
-load_dotenv()
-
 
 DBX_APP_KEY = getenv("DBX_APP_KEY")
 DBX_APP_SECRET = getenv("DBX_APP_SECRET")
