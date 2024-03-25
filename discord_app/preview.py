@@ -12,13 +12,13 @@ class PreviewModal(discord.ui.Modal):
         )
 
     async def callback(self, interaction: discord.Interaction):
-        text = f"{self.children[0].value}\n\n{interaction.user.display_name}より"
+        text = f"`送信者`:`{interaction.user.display_name}`\n\n{self.children[0].value}"
 
-        await interaction.response.send_message(text, view =PreviewButton(text), ephemeral=True)
+        await interaction.response.send_message(text, view=PreviewView(text), ephemeral=True)
 
 #-------------------------------------------------------------
         
-class PreviewButton(discord.ui.View):
+class PreviewView(discord.ui.View):
     def __init__(self, text, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 

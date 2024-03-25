@@ -23,25 +23,28 @@ async def get_user_info(ctx, member: discord.Member):
         """
         result_json には、以下のような情報が格納されています。
         {
-            "view_attend_code": -> 出席コードを閲覧できるかどうか。True なら権限有り、False なら権限無し
             "practice_contact": -> 活動連絡を受信できるかどうか。True なら権限有り、False なら権限無し
             "attend_status":    -> 出席率。0~1の小数で表されます。
         }
         """
-
-        if result_json["view_attend_code"]:
-            view_attend_code = "権限有り"
-        else:
-            view_attend_code = "権限無し"
 
         if result_json["practice_contact"]:
             practice_contact = "権限有り"
         else:
             practice_contact = "権限無し"
 
+        view_attend_code = "閲覧不可"
+
+        for channel in bot.guilds[0].channels:
+            if channel.id == getenv("VIEW_ATTEND_CODE_CHANNEL_ID"):
+                for Member in channel.members:
+                    if member.id == Member.id:
+                        view_attend_code = "閲覧可能"
+                        break
 
         embed = discord.Embed(
             title=f"{member.display_name}の情報",
+            url=getenv("SPREADSHEET_URL"),
             fields=[
                 discord.EmbedField(name="出席率", value=result_json['attend_status'], inline=True),
                 discord.EmbedField(name="出席コード閲覧", value=view_attend_code, inline=True),

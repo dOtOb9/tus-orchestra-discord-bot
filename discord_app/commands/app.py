@@ -8,11 +8,9 @@ from discord_app.dm.general import DmGeneralModal
 from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
-from discord_app.access_dropbox import verifyAccessTokenButton
+from discord_app.set import setProfileView
 
 from gas.post import can_send_activity_dm
-
-from dropbox_app import startDropboxOAuth
 
 github_logo_url = "https://raw.githubusercontent.com/dOtOb9/tus-orchestra-discord-bot/main/image/github-mark-white.png"
 author_avatar_github_url = "https://avatars.githubusercontent.com/u/124516137?v=4"
@@ -74,8 +72,6 @@ async def alert(
     await ctx.send_modal(DmGeneralModal(title="緊急連絡フォーム", send_type = send_type, colour=(255, 0, 0))) # 赤色
 
 #-------------------------------------------------------------
-
-#-------------------------------------------------------------
     
 set = bot.create_group("set")
 
@@ -88,24 +84,9 @@ async def activity_dm(ctx, types: discord.Option(str, choices=["受信する", "
     await ctx.respond(f"設定を「{types}」に更新しました。\n\n設定を確認するには、`/status`と送信してください。", ephemeral=True)
     await can_send_activity_dm(ctx.user.id, Bool)
 
-#-------------------------------------------------------------
-    
-@set.command()
-async def access_dropbox(ctx):
-    auth_url, auth_flow = startDropboxOAuth()
-
-    embed = discord.Embed(
-        title = "ここからアクセスコードを取得してください。",
-        description = "DropboxのOAuth認証",
-        url = auth_url,
-    )
-
-    embed.set_footer(
-        text = "Dropbox",
-        icon_url=getenv("DBX_ICON_URL"),
-    )
-
-    await ctx.respond(view=verifyAccessTokenButton(auth_flow), embed=embed, ephemeral=True)
+@set.command(description="自身のサーバー内設定を変更する")
+async def profile(ctx):
+    await ctx.response.send_message(view=setProfileView(), ephemeral=True)
 
 #-------------------------------------------------------------
 
@@ -190,4 +171,3 @@ async def server(ctx):
         text = "Railway",
     )
     await ctx.respond(embed=embed, ephemeral=True)
-
