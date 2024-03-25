@@ -103,7 +103,7 @@ async def verify_send_dm(member_list, embeds, send_type, interaction, attend_but
 
     await interaction.user.send(
         embeds = new_embeds,
-        view=SendDmButton(embeds, member_list, send_type=send_type, attend_button=attend_button),
+        view=SendDmButton(new_embeds, member_list, send_type=send_type, attend_button=attend_button),
     )
 
 #================================================================================================================
