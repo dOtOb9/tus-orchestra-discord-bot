@@ -84,6 +84,8 @@ async def verify_send_dm(member_list, embeds, send_type, interaction, attend_but
 
     # 送信先リストの埋め込みテキストを作成
     #---------------------------------------------------------------------------------------------------------------
+    new_embeds = embeds.copy()
+
     name_list = [member.display_name for member in member_list]
     name_list_text = ','.join([f"`{name}`" for name in name_list])
 
@@ -95,12 +97,12 @@ async def verify_send_dm(member_list, embeds, send_type, interaction, attend_but
     if send_type == "Bcc":
         send_list_embed.title += " (非公開）"
 
-    embeds.append(send_list_embed)
+    new_embeds.append(send_list_embed)
 
     #---------------------------------------------------------------------------------------------------------------
 
     await interaction.user.send(
-        embeds = embeds,
+        embeds = new_embeds,
         view=SendDmButton(embeds, member_list, send_type=send_type, attend_button=attend_button),
     )
 
