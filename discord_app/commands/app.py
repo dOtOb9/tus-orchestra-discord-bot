@@ -8,7 +8,6 @@ from discord_app.dm.general import DmGeneralModal
 from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
-from discord_app.set import setProfileView
 
 from gas.post import can_send_activity_dm
 
@@ -83,10 +82,6 @@ async def activity_dm(ctx, types: discord.Option(str, choices=["受信する", "
 
     await ctx.respond(f"設定を「{types}」に更新しました。\n\n設定を確認するには、`/status`と送信してください。", ephemeral=True)
     await can_send_activity_dm(ctx.user.id, Bool)
-
-@set.command(description="自身のサーバー内設定を変更する")
-async def profile(ctx):
-    await ctx.response.send_message(view=setProfileView(), ephemeral=True)
 
 #-------------------------------------------------------------
 

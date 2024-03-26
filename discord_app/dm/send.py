@@ -3,10 +3,10 @@ from os import getenv
 import discord
 
 from discord_app.bot import bot
+from discord_app.ui import deleteMessageView, deleteMessageButton, viewSendListButton
 from discord_app.verify_attend import AttendAuthButton 
 from gas.get import can_send_activity_dm   
 from gas.post import generate_activity_date
-
 
 class SendDmButton(discord.ui.View):
     def __init__(self, embeds, member_list, send_type, attend_button, *args, **kwargs) -> None:
@@ -19,6 +19,8 @@ class SendDmButton(discord.ui.View):
         self.disable_on_timeout = True
 
         self.add_item(viewSendListButton(label="送信先を非表示", disabled=True))
+        self.add_item(deleteMessageButton(row=3, disabled=True))
+        self.add_item(deleteMessageButton(row=4))
 
         if attend_button:
             self.add_item(AttendAuthButton(disabled=True))
@@ -33,7 +35,8 @@ class SendDmButton(discord.ui.View):
 
         view = discord.ui.View(timeout=60*60*24*30, disable_on_timeout=True) # 30日間有効
 
-        view.add_item(viewSendListButton(self.embeds[-1], times=0, label="送信先を表示"))
+        view.add_item(viewSendListButton(self.embeds[-1], times=0, label="送信先を表示", row=0))
+        view.add_item(deleteMessageButton(row=4))
 
         self.embeds.pop(-1) # 送信先リストの埋め込みを削除
         
@@ -49,30 +52,6 @@ class SendDmButton(discord.ui.View):
 
         for member in self.member_list: 
             await member.send(embeds=self.embeds, view=view)
-
-
-#================================================================================================================
-                
-
-class viewSendListButton(discord.ui.Button):
-    def __init__(self, send_list_embed=None, times=0, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.times = times
-        self.send_list_embed = send_list_embed
-
-    async def callback(self, interaction):
-        new_embeds = self.view.message.embeds.copy()
-        if self.times % 2 == 0:
-            self.label = "送信先を非表示"
-            new_embeds.append(self.send_list_embed)
-
-            await interaction.response.edit_message(embeds=new_embeds, view=self.view)
-        else:
-            self.label = "送信先を表示"
-
-            await interaction.response.edit_message(embeds=new_embeds, view=self.view)
-
-        self.times += 1
 
 #================================================================================================================
 
@@ -131,7 +110,7 @@ async def verify_gas_send_dm(mode, embeds, send_type, interaction):
             icon_url=getenv("SPREADSHEET_ICON_URL"),
             url=getenv("SPREADSHEET_URL"),  
         )
-        await interaction.user.send(embed=embed, ephemeral=True)
+        await interaction.user.send(embed=embed, view=deleteMessageView())
         return
     #----------------------------------------------------------------
 

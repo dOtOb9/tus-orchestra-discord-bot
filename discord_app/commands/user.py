@@ -3,6 +3,7 @@ from datetime import datetime
 from os import getenv
 
 from discord_app.bot import bot
+from discord_app.ui import deleteMessageView
 from gas.get import user_info
         
 @bot.user_command(name="ユーザー情報を取得する")
@@ -65,4 +66,4 @@ async def get_user_info(ctx, member: discord.Member):
         icon_url=getenv("APPS_SCRIPT_ICON_URL"),
     )
 
-    await author.send(embed=embed)
+    await author.send(embed=embed, view=deleteMessageView())

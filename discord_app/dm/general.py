@@ -37,4 +37,4 @@ class DmGeneralModal(discord.ui.Modal):
                 embeds=[embed]
             )
         except:
-            await interaction.response.send_message("エラーが発生しました。", ephemeral=True)
+            await interaction.response.send_message("有効なURLを指定してください。", ephemeral=True)

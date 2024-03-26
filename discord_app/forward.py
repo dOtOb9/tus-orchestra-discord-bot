@@ -1,5 +1,6 @@
 import discord
 
+from discord_app.ui import deleteMessageView
 
 class SelectChannelButtons(discord.ui.View):
     def __init__(self, embeds, *args, **kwargs):
@@ -12,7 +13,7 @@ class SelectChannelButtons(discord.ui.View):
         button.label = "自分のDMチャンネルに送信済み"
         await interaction.response.edit_message(view=self)
 
-        await interaction.user.send(embeds=self.embeds)
+        await interaction.user.send(embeds=self.embeds, view=deleteMessageView())
 
     @discord.ui.button(label="チャンネルに送信する", emoji="📺", style=discord.ButtonStyle.primary)
     async def select_channel(self, button, interaction):

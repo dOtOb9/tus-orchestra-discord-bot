@@ -1,5 +1,4 @@
 from discord_app.bot import bot
-from discord_app.set import setProfileView
 from gas.post import user_post
 
 #================================================================================================
@@ -8,13 +7,6 @@ from gas.post import user_post
 async def on_member_update(before, after):
     if after.bot: return
     await member_update(after)
-
-#-----------------------------------------------------------------------------------
-
-@bot.event
-async def on_member_join(member):
-    if member.bot: return
-    await member.send("東京理科大学管弦楽団へようこそ！\nまずはプロフィールの設定をしましょう！", view=setProfileView())
 
 #-----------------------------------------------------------------------------------
             

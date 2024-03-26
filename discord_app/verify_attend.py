@@ -1,6 +1,8 @@
 import discord
 from os import getenv
 
+
+from discord_app.ui import deleteMessageView
 from gas.post import user_post
 
 #================================================================================================
@@ -53,4 +55,4 @@ class AttendAuthModal(discord.ui.Modal):
             icon_url = getenv("APPS_SCRIPT_ICON_URL"),
         )
 
-        await author.send(embed=embed)
+        await author.send(embed=embed, view=deleteMessageView())
