@@ -20,7 +20,6 @@ class SendDmButton(discord.ui.View):
         self.disable_on_timeout = True
 
         self.add_item(viewSendListButton(label="送信先を非表示", disabled=True))
-        self.add_item(deleteMessageButton(row=3, disabled=True))
         self.add_item(deleteMessageButton(row=4))
 
         if attend_button:
@@ -37,7 +36,6 @@ class SendDmButton(discord.ui.View):
         view = discord.ui.View(timeout=60*60*24*30, disable_on_timeout=True) # 30日間有効
 
         view.add_item(viewSendListButton(self.embeds[-1], times=0, label="送信先を表示", row=0))
-        view.add_item(deleteMessageButton(row=4))
 
         self.embeds.pop(-1) # 送信先リストの埋め込みを削除
         
