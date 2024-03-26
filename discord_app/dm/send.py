@@ -16,6 +16,7 @@ class SendDmButton(discord.ui.View):
         self.send_type = send_type
         self.attend_button = attend_button
 
+        self.timeout = 60*60*24*30 # 30日間有効
         self.disable_on_timeout = True
 
         self.add_item(viewSendListButton(label="送信先を非表示", disabled=True))
