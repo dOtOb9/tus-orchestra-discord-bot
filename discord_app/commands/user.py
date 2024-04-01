@@ -51,9 +51,9 @@ async def get_user_info(ctx, member: discord.Member):
             url=getenv("SPREADSHEET_URL"),
             fields=[
                 discord.EmbedField(name="📺出席コード閲覧", value=view_attend_code, inline=True),
-                discord.EmbedField(name="📧活動連絡受信", value=practice_contact, inline=True),
+                discord.EmbedField(name="📧乗り番連絡受信", value=practice_contact, inline=True),
                 discord.EmbedField(name="📈通常練習", value=result_json['attend_status'], inline=False),
-                discord.EmbedField(name="📈Tutti練習", value=result_json['tutti_attend_status'], inline=True),
+                discord.EmbedField(name="📈Tutti練習", value=result_json['tutti_attend_status'], inline=False),
             ],
             color=discord.Color.orange(),
             timestamp=datetime.now()

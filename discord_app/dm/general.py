@@ -1,6 +1,6 @@
 import discord
 
-from discord_app.dm.select_user import SelectUsersView
+from discord_app.dm.select_user import SelectSendView
 
 #-------------------------------------------------------------
 
@@ -30,7 +30,7 @@ class DmGeneralModal(discord.ui.Modal):
         try:
             await interaction.response.send_message(
                 "送信先を選んでください。",
-                view=SelectUsersView(embeds=[embed], **self.kwargs),
+                view=SelectSendView(embeds=[embed], **self.kwargs),
                 ephemeral=True,
                 embeds=[embed]
             )

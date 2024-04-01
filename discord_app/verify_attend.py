@@ -8,19 +8,17 @@ from gas.post import user_post
 #================================================================================================
 
 class AttendAuthButton(discord.ui.Button):
-    def __init__(self, label="出席認証", style=discord.ButtonStyle.primary):
-        super().__init__()
-        self.label = label
-        self.style = style
+    def __init__(self, label="出席認証", style=discord.ButtonStyle.primary, disabled=False, row=None):
+        super().__init__(label=label, style=style, disabled=disabled, row=row)
 
     async def callback(self, interaction):
-        await interaction.response.send_modal(AttendAuthModal(title="出席登録フォーム"))
+        await interaction.response.send_modal(AttendAuthModal())
 
 #================================================================================================
 
 class AttendAuthModal(discord.ui.Modal):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__(title="出席登録フォーム")
 
         self.add_item(discord.ui.InputText(label="認証コード", placeholder="半角数字4桁で入力してください。", min_length=4, max_length=4))
 

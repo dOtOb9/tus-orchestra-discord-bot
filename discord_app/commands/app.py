@@ -142,19 +142,19 @@ async def guide(ctx):
 
     embed.set_author(
         name = "dOtOb9",
-        icon_url = qiita_logo_url,
+        icon_url = author_avatar_github_url,
         url = author_github_url,
     )
 
     embed.set_footer(
-        icon_url = github_logo_url,
-        text = "GitHub",
+        icon_url = qiita_logo_url,
+        text = "Qiita",
     )
 
     await ctx.respond(embed=embed, ephemeral=True)
 
 #-------------------------------------------------------------
-    
+
 dev = bot.create_group("dev")
 
 #-------------------------------------------------------------
@@ -163,7 +163,7 @@ dev = bot.create_group("dev")
 async def repo(ctx):
     embed = discord.Embed(
         title="tus-orchestra-discord-bot",
-        description="ソースのGitHubリポジトリ",
+        description="ソースコードのGitHubリポジトリ",
         colour=discord.Color.from_rgb(127, 0, 255), # 紫色
         url=repo_url,
     )

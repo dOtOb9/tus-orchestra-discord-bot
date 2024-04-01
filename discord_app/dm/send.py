@@ -46,7 +46,7 @@ class SendDmView(discord.ui.View):
 
 
         for member in self.kwargs['member_list']: 
-            await member.send(embeds=self.kwargs['embeds'] + [self.kwargs['send_list_embed']], 
+            await member.send(embeds=self.kwargs['embeds'], 
                               view=view, 
                               )
 
@@ -76,7 +76,7 @@ async def verify_send_dm(**kwargs):
 
     await kwargs['interaction'].user.send(
         embeds = kwargs['embeds'] + [send_list_embed],
-        view=SendDmButton(send_list_embed=send_list_embed, **kwargs),
+        view=SendDmView(send_list_embed=send_list_embed, **kwargs),
     )
 
 #================================================================================================================

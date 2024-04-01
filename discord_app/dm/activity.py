@@ -4,7 +4,7 @@ from urllib.parse import quote
 import discord
 import datetime as dt
 
-from discord_app.dm.select_user import SelectUsersView
+from discord_app.dm.select_user import SelectSendView
 from discord_app.dm.send import verify_gas_send_dm
 
 #-------------------------------------------------------------
@@ -103,11 +103,11 @@ class DmActivityModal(discord.ui.Modal):
         embeds = [main_embed, google_map_embed, google_calendar_embed]
 
         if self.kwargs['is_tutti']:
-            await verify_gas_send_dm(mode='strings', interaction=interaction, **self.kwargs)
+            await verify_gas_send_dm(mode='strings', interaction=interaction, embeds=embeds, **self.kwargs)
         else:
             await interaction.response.send_message(
                 "送信先を選んでください。",
-                view=SelectUsersView(embeds=embeds, **self.kwargs),
+                view=SelectSendView(embeds=embeds, **self.kwargs),
                 ephemeral=True,
                 embeds=embeds,
                 )

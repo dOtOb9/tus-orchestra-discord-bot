@@ -4,7 +4,7 @@ from discord_app.bot import bot
 from discord_app.dm.send import verify_send_dm_text, verify_gas_send_dm
 
 
-class SelectUsersView(discord.ui.View):
+class SelectSendView(discord.ui.View):
     def __init__(self, **kwargs) -> None:
         super().__init__()
         self.kwargs = kwargs

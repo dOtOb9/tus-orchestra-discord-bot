@@ -4,7 +4,7 @@ import discord
 #================================================================================================================
 
 class deleteMessageView(discord.ui.View):
-    def __init__(self, ) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.add_item(deleteMessageButton())
         self.timeout = 60*60*24*30 # 30日間有効
@@ -13,8 +13,8 @@ class deleteMessageView(discord.ui.View):
 #================================================================================================================
 
 class deleteMessageButton(discord.ui.Button):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.style = discord.ButtonStyle.danger
         self.label = "削除"
 
@@ -39,7 +39,7 @@ class VerifydeleteMessageModal(discord.ui.Modal):
 #================================================================================================================
         
 class viewSendListButton(discord.ui.Button):
-    def __init__(self, send_list_embed=None, times=0, ) -> None:
+    def __init__(self, send_list_embed=None, times=0) -> None:
         super().__init__()
         self.times = times
         self.send_list_embed = send_list_embed
