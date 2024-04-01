@@ -17,6 +17,7 @@ author_github_url = "https://github.com/dOtOb9"
 repo_url = "https://github.com/dOtOb9/tus-orchestra-discord-bot"
 server_execution_log = "https://railway.app/project/149f3467-5a17-4aaf-b362-460be8e9a670/logs"
 Railway_logo_url = "https://railway.app/brand/logo-light.png"
+qiita_logo_url = "https://github.com/dOtOb9/tus-orchestra-discord-bot/blob/main/image/qiita-icon.png?raw=true"
 
 #-------------------------------------------------------------
 
