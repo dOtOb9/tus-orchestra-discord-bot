@@ -19,13 +19,13 @@ class deleteMessageButton(discord.ui.Button):
         self.label = "削除"
 
     async def callback(self, interaction):
-        await interaction.response.send_modal(VerifydeleteMessageModal(title="削除確認フォーム"))
+        await interaction.response.send_modal(VerifydeleteMessageModal())
 
 #----------------------------------------------------------------------------------------------------------------
         
 class VerifydeleteMessageModal(discord.ui.Modal):
-    def __init__(self, ) -> None:
-        super().__init__()
+    def __init__(self) -> None:
+        super().__init__(title='削除確認フォーム')
 
         self.add_item(discord.ui.InputText(label="削除する場合は、`DELETE`と入力してください。", placeholder="DELETE"))
 
