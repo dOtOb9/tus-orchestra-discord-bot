@@ -4,8 +4,8 @@ import discord
 #================================================================================================================
 
 class deleteMessageView(discord.ui.View):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, ) -> None:
+        super().__init__()
         self.add_item(deleteMessageButton())
         self.timeout = 60*60*24*30 # 30日間有効
         self.disable_on_timeout = True
@@ -13,8 +13,8 @@ class deleteMessageView(discord.ui.View):
 #================================================================================================================
 
 class deleteMessageButton(discord.ui.Button):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self) -> None:
+        super().__init__()
         self.style = discord.ButtonStyle.danger
         self.label = "削除"
 
@@ -24,8 +24,8 @@ class deleteMessageButton(discord.ui.Button):
 #----------------------------------------------------------------------------------------------------------------
         
 class VerifydeleteMessageModal(discord.ui.Modal):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, ) -> None:
+        super().__init__()
 
         self.add_item(discord.ui.InputText(label="削除する場合は、`DELETE`と入力してください。", placeholder="DELETE"))
 
@@ -39,8 +39,8 @@ class VerifydeleteMessageModal(discord.ui.Modal):
 #================================================================================================================
         
 class viewSendListButton(discord.ui.Button):
-    def __init__(self, send_list_embed=None, times=0, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, send_list_embed=None, times=0, ) -> None:
+        super().__init__()
         self.times = times
         self.send_list_embed = send_list_embed
 

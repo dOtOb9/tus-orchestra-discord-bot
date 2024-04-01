@@ -2,14 +2,14 @@ import discord
 from os import getenv
 
 
-from discord_app.ui import deleteMessageView
+from discord_app.delete import deleteMessageView
 from gas.post import user_post
 
 #================================================================================================
 
 class AttendAuthButton(discord.ui.Button):
-    def __init__(self, label="出席認証", style=discord.ButtonStyle.primary, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, label="出席認証", style=discord.ButtonStyle.primary):
+        super().__init__()
         self.label = label
         self.style = style
 

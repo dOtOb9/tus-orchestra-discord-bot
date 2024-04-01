@@ -3,12 +3,15 @@ from datetime import datetime
 from os import getenv
 
 from discord_app.bot import bot
-from discord_app.ui import deleteMessageView
+from discord_app.delete import deleteMessageView
 from gas.get import user_info
         
+
 @bot.user_command(name="ユーザー情報を取得する")
 async def get_user_info(ctx, member: discord.Member):
-    if member.bot: await ctx.respond("ボットの情報は取得できません。", ephemeral=True)
+    if member.bot: 
+        await ctx.respond("ボットの情報は取得できません。", ephemeral=True)
+        return
 
     author = ctx.author
     await ctx.respond(f"ユーザー情報を取得中... {member.display_name}", ephemeral=True)
@@ -47,9 +50,10 @@ async def get_user_info(ctx, member: discord.Member):
             title=f"{member.display_name}の情報",
             url=getenv("SPREADSHEET_URL"),
             fields=[
-                discord.EmbedField(name="出席率", value=result_json['attend_status'], inline=True),
-                discord.EmbedField(name="出席コード閲覧", value=view_attend_code, inline=True),
-                discord.EmbedField(name="活動連絡受信", value=practice_contact, inline=True),
+                discord.EmbedField(name="📺出席コード閲覧", value=view_attend_code, inline=True),
+                discord.EmbedField(name="📧活動連絡受信", value=practice_contact, inline=True),
+                discord.EmbedField(name="📈通常練習", value=result_json['attend_status'], inline=False),
+                discord.EmbedField(name="📈Tutti練習", value=result_json['tutti_attend_status'], inline=True),
             ],
             color=discord.Color.orange(),
             timestamp=datetime.now()

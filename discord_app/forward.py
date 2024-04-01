@@ -1,8 +1,8 @@
 import discord
 
-from discord_app.ui import deleteMessageView
+from discord_app.delete import deleteMessageView
 
-class SelectChannelButtons(discord.ui.View):
+class SelectChannelView(discord.ui.View):
     def __init__(self, embeds, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.embeds = embeds
@@ -17,9 +17,9 @@ class SelectChannelButtons(discord.ui.View):
 
     @discord.ui.button(label="チャンネルに送信する", emoji="📺", style=discord.ButtonStyle.primary)
     async def select_channel(self, button, interaction):
-        await interaction.response.send_message(view=SelectChannelsMenu(embeds=self.embeds), ephemeral=True)
+        await interaction.response.send_message(view=SelectChannelsView(embeds=self.embeds), ephemeral=True)
 
-class SelectChannelsMenu(discord.ui.View):
+class SelectChannelsView(discord.ui.View):
     def __init__(self, embeds, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.embeds = embeds
@@ -33,12 +33,12 @@ class SelectChannelsMenu(discord.ui.View):
 
         if len(channels):
             await interaction.response.send_message(f"送信するチャンネル\n{', '.join([channel.mention for channel in channels])}", 
-                                                view=SendChannelsButton(channels=channels, embeds=self.embeds), ephemeral=True)
+                                                view=SendChannelsView(channels=channels, embeds=self.embeds), ephemeral=True)
         else:
             await interaction.response.send_message("テキストチャンネルを選択してください。", ephemeral=True)
 
 
-class SendChannelsButton(discord.ui.View):
+class SendChannelsView(discord.ui.View):
     def __init__(self, channels, embeds, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.channels = channels

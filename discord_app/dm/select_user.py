@@ -4,11 +4,10 @@ from discord_app.bot import bot
 from discord_app.dm.send import verify_send_dm_text, verify_gas_send_dm
 
 
-class SelectUsersButtons(discord.ui.View):
-    def __init__(self, embeds, send_type, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.embeds = embeds
-        self.send_type = send_type
+class SelectUsersView(discord.ui.View):
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.kwargs = kwargs
 
         self.timeout = None
 
@@ -19,61 +18,58 @@ class SelectUsersButtons(discord.ui.View):
         for member in bot.guilds[0].members:
             member_list.append(member)
 
-        await verify_send_dm_text(member_list, self.embeds, self.send_type, interaction)
+        await verify_send_dm_text(member_list=member_list, interaction=interaction, **self.kwargs)
 
     @discord.ui.button(label="ロールで決める", emoji="👑", style=discord.ButtonStyle.primary)
     async def role_callback(self, button, interaction):
         await interaction.response.send_message(
-            view=SelectRolesMenu(embeds=self.embeds, send_type=self.send_type),
+            view=SelectRolesView(**self.kwargs),
             ephemeral=True
         )
 
     @discord.ui.button(label="チャンネルで決める", emoji="📢", style=discord.ButtonStyle.primary)
     async def channel_callback(self, button, interaction):
         await interaction.response.send_message(
-            view=SelectChannelMenu(embeds=self.embeds, send_type=self.send_type),
+            view=SelectChannelView(**self.kwargs),
             ephemeral=True
         )
     @discord.ui.button(label="個人で決める", emoji="👤", style=discord.ButtonStyle.primary)
     async def personal_callback(self, button, interaction):
         await interaction.response.send_message(
-            view=SelectUsersMenu(embeds=self.embeds, send_type=self.send_type),
+            view=SelectUsersView(**self.kwargs),
             ephemeral=True
         )
 
     @discord.ui.button(label="活動連絡DMを受け取る弦楽器団員", emoji="🎻",row=1)
     async def string_callback(self, button, interaction):
-        await verify_gas_send_dm(mode='strings', embeds=self.embeds, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='strings', interaction=interaction, **self.kwargs)
 
     @discord.ui.button(label="活動連絡DMを受け取る金管楽器団員", emoji="🎺",row=2)
     async def wind_callback(self, button, interaction):
-        await verify_gas_send_dm(mode='brass', embeds=self.embeds, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='brass', interaction=interaction, **self.kwargs)
 
     @discord.ui.button(label="活動連絡DMを受け取る木管楽器団員", emoji="🎹",row=2)
     async def woodwind_callback(self, button, interaction):
-        await verify_gas_send_dm(mode='woodwind', embeds=self.embeds, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='woodwind', interaction=interaction, **self.kwargs)
 
     @discord.ui.button(label="活動連絡DMを受け取る打楽器団員", emoji="🥁",row=2)
     async def percussion_callback(self, button, interaction):
-        await verify_gas_send_dm(mode='percussion', embeds=self.embeds, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='percussion', interaction=interaction, kwargs=self.kwargs)
 
     @discord.ui.button(label="活動連絡DMを受け取る管弦楽団員", emoji="🎼",row=3)
     async def orchestra_callback(self, button, interaction):
-        await verify_gas_send_dm(mode='orchestra', embeds=self.embeds, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='orchestra', interaction=interaction, **self.kwargs)
 
     @discord.ui.button(label="カスタム列で指定する", emoji="⭐", row=4)
     async def custom_callback(self, button, interaction):
-        await verify_gas_send_dm(mode='custom', embeds=self.embeds, send_type=self.send_type, interaction=interaction)
+        await verify_gas_send_dm(mode='custom', interaction=interaction, **self.kwargs)
 
 #-------------------------------------------------------------
         
-class SelectChannelMenu(discord.ui.View):
-    def __init__(self, embeds, send_type, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.embeds = embeds
-        self.send_type = send_type
-
+class SelectChannelView(discord.ui.View):
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.kwargs = kwargs
         self.timeout = None
 
     @discord.ui.channel_select(placeholder="チャンネルを選択", min_values=1, max_values=25)
@@ -88,20 +84,16 @@ class SelectChannelMenu(discord.ui.View):
 
         await verify_send_dm_text(
             member_list = list(set(member_list)), 
-            embeds = self.embeds,
-            send_type = self.send_type,
-            interaction = interaction
+            interaction = interaction,
+            **self.kwargs,
         )
 
 #-------------------------------------------------------------
         
-class SelectUsersMenu(discord.ui.View):
-    def __init__(self, embeds, send_type, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.embeds = embeds
-        self.send_type = send_type
-
+class SelectUsersView(discord.ui.View):
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.kwargs = kwargs
         self.timeout = None
 
     @discord.ui.user_select(placeholder="ユーザーを選択", min_values=1, max_values=25)
@@ -114,18 +106,16 @@ class SelectUsersMenu(discord.ui.View):
         
         await verify_send_dm_text(
             member_list = list(set(member_list)), 
-            embeds = self.embeds, 
-            send_type = self.send_type, 
-            interaction = interaction
+            interaction = interaction, 
+            **self.kwargs, 
             )
 
 #-------------------------------------------------------------
         
-class SelectRolesMenu(discord.ui.View):
-    def __init__(self, embeds, send_type, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.embeds = embeds
-        self.send_type = send_type
+class SelectRolesView(discord.ui.View):
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.kwargs = kwargs
 
         self.timeout = None
 
@@ -140,8 +130,7 @@ class SelectRolesMenu(discord.ui.View):
         
         await verify_send_dm_text(
             member_list = list(set(member_list)), 
-            embeds = self.embeds, 
-            send_type = self.send_type,
+            kwargs = self.kwargs,
             interaction = interaction
             )
 

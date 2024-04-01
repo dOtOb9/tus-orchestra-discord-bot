@@ -29,6 +29,6 @@ class ChannelGeneralModal(discord.ui.Modal):
         )
 
         try:
-            await interaction.response.send_message(view=ChannelSendButton(embed=embed), ephemeral=True, embed=embed)
+            await interaction.response.send_message(view=discord.ui.View(ChannelSendButton(embed=embed)), ephemeral=True, embed=embed)
         except:
-            await interaction.response.send_message("エラーが発生しました。", ephemeral=True)
+            await interaction.response.send_message("有効なURLを指定してください。", ephemeral=True)

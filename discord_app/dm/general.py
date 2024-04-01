@@ -1,15 +1,13 @@
 import discord
 
-from discord_app.dm.select_user import SelectUsersButtons
+from discord_app.dm.select_user import SelectUsersView
 
 #-------------------------------------------------------------
 
 class DmGeneralModal(discord.ui.Modal):
-    def __init__(self, colour, send_type, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.colour = colour
-        self.send_type = send_type
+    def __init__(self, **kwargs):
+        super().__init__(title=kwargs['title'])
+        self.kwargs=kwargs
 
         self.add_item(discord.ui.InputText(label="タイトル"))
         self.add_item(discord.ui.InputText(label="URL", placeholder="有効なURLを指定してください。", required=False))
@@ -20,7 +18,7 @@ class DmGeneralModal(discord.ui.Modal):
             title = self.children[0].value,
             url = self.children[1].value,
             description=self.children[2].value,
-            colour=discord.Color.from_rgb(r=self.colour[0], g=self.colour[1], b=self.colour[2])
+            colour=discord.Color.from_rgb(r=self.kwargs['colour'][0], g=self.kwargs['colour'][1], b=self.kwargs['colour'][2])
         )
 
         embed.set_author(
@@ -32,7 +30,7 @@ class DmGeneralModal(discord.ui.Modal):
         try:
             await interaction.response.send_message(
                 "送信先を選んでください。",
-                view=SelectUsersButtons(embeds=[embed], send_type=self.send_type),
+                view=SelectUsersView(embeds=[embed], **self.kwargs),
                 ephemeral=True,
                 embeds=[embed]
             )

@@ -1,9 +1,9 @@
-from os import getenv
-
 import discord
 
 from discord_app.bot import bot
 from discord_app.ch.general import ChannelGeneralModal
+from discord_app.ch.key import KeyView
+from discord_app.ch.send import ChannelSendButton
 from discord_app.dm.general import DmGeneralModal
 from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
@@ -34,6 +34,25 @@ async def normal(ctx):
 async def alert(ctx):
     await ctx.send_modal(ChannelGeneralModal(title="緊急連絡フォーム", colour=(255, 0, 0))) # 赤色
 
+#-------------------------------------------------------------
+    
+@channel.command(description="鍵開閉連絡を送信します。")
+async def key(ctx):
+    start_embed = discord.Embed(
+        title="開始",
+    )
+
+    start_embed.set_author(
+        name=ctx.user.display_name, 
+        icon_url=ctx.user.display_avatar,
+        url=ctx.user.jump_url,
+    )
+
+    view = KeyView()
+    view.disable_all_items()
+    view.add_item(ChannelSendButton(view=KeyView(), embed=start_embed))
+
+    await ctx.response.send_message(view=view, embed=start_embed, ephemeral=True)
 
 #-------------------------------------------------------------
     
@@ -48,9 +67,24 @@ async def activity(
     year: int, month: int, day: int, start_hour :int = 10, 
     start_minute :int = 0, finish_hour : int = 16, finish_minute : int =  30,
     prepare_minutes : int = 15,
+    tutti: discord.Option(str, choices=["Yes", "No"]) = "No",
     send_type: discord.Option(str, choices=["Cc", "Bcc"]) = "Cc",
     ):
-    await activity_modal(ctx, year, month, day, start_hour, start_minute, finish_hour, finish_minute, prepare_minutes, send_type)
+
+    params = {
+        "year": year,
+        "month": month,
+        "day": day,
+        "start_hour": start_hour,
+        "start_minute": start_minute,
+        "finish_hour": finish_hour,
+        "finish_minute": finish_minute,
+        "prepare_minutes": prepare_minutes,
+        "is_tutti": tutti == 'Yes',
+        "send_type": send_type,
+    }
+
+    await activity_modal(ctx, **params)
 
 #-------------------------------------------------------------
 
@@ -100,14 +134,14 @@ async def preview(ctx):
 @bot.slash_command(description="使い方ガイドを表示します。")
 async def guide(ctx):
     embed = discord.Embed(
-        title="使い方ガイド(README.md)",
+        title="使い方ガイド",
         colour=discord.Color.from_rgb(255, 102, 255), # ピンク色
-        url="https://github.com/dOtOb9/tus-orchestra-discord-bot/blob/main/README.md"
+        url="https://qiita.com/dOtOb9/private/74f95daf03e3301f67d7"
     )
 
     embed.set_author(
         name = "dOtOb9",
-        icon_url = author_avatar_github_url,
+        icon_url = qiita_logo_url,
         url = author_github_url,
     )
 

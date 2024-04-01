@@ -4,25 +4,32 @@ from urllib.parse import quote
 import discord
 import datetime as dt
 
-from discord_app.dm.select_user import SelectUsersButtons
+from discord_app.dm.select_user import SelectUsersView
+from discord_app.dm.send import verify_gas_send_dm
 
 #-------------------------------------------------------------
 
 class DmActivityModal(discord.ui.Modal):
-    def __init__(self, start_dt, finish_dt, prepare_minutes, send_type, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs) -> None:
+        super().__init__(title="活動連絡フォーム")
+        self.kwargs = kwargs
 
-        self.send_type = send_type
+        meeting_dt = kwargs['start_dt'] - dt.timedelta(minutes=kwargs['prepare_minutes'])
 
-        meeting_dt = start_dt - dt.timedelta(minutes=prepare_minutes)
-
-        self.actibity_date_text = f"{start_dt.year:04}/{start_dt.month:02}/{start_dt.day:02} ({start_dt.strftime('%a')})"
-        self.actibity_time_text = f"{start_dt.hour}:{start_dt.minute:02} ~ {finish_dt.hour}:{finish_dt.minute:02}"
+        self.actibity_date_text = f"{kwargs['year']:04}/{kwargs['month']:02}/{kwargs['day']:02} ({kwargs['start_dt'].strftime('%a')})"
+        self.actibity_time_text = f"{kwargs['start_hour']}:{kwargs['start_minute']:02} ~ {kwargs['finish_hour']}:{kwargs['finish_minute']:02}"
         self.meeting_time_text = f"**{meeting_dt.hour}:{meeting_dt.minute:02} 集合**"
 
-        self.google_calendar_plan_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&dates={start_dt.strftime('%Y%m%dT%H%M%S')}/{finish_dt.strftime('%Y%m%dT%H%M%S')}"
-    
-        self.add_item(discord.ui.InputText(label="タイトル", placeholder="練習内容を入力"))
+        self.google_calendar_plan_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&dates={kwargs['start_dt'].strftime('%Y%m%dT%H%M%S')}/{kwargs['finish_dt'].strftime('%Y%m%dT%H%M%S')}"
+
+        #----------------------------------------------------------------
+
+        title_input = discord.ui.InputText(label="タイトル", placeholder="練習内容を入力")
+        if kwargs['is_tutti']:
+            title_input.value = "Tutti"
+        #----------------------------------------------------------------
+
+        self.add_item(title_input)
         self.add_item(discord.ui.InputText(label="会場", placeholder="GoogleMapで検索できるワードを推奨"))
         self.add_item(discord.ui.InputText(label="備考", value="- 部屋\n\n\n- 練習内容\n１コマ目：\n２コマ目：\n３コマ目：\n４コマ目：", style = discord.InputTextStyle.long, required=False))
 
@@ -95,40 +102,26 @@ class DmActivityModal(discord.ui.Modal):
 
         embeds = [main_embed, google_map_embed, google_calendar_embed]
 
-        await interaction.response.send_message(
-            "送信先を選んでください。",
-            view=SelectUsersButtons(embeds=embeds, send_type=self.send_type),
-            ephemeral=True,
-            embeds=embeds,
-            )
-        
+        if self.kwargs['is_tutti']:
+            await verify_gas_send_dm(mode='strings', interaction=interaction, **self.kwargs)
+        else:
+            await interaction.response.send_message(
+                "送信先を選んでください。",
+                view=SelectUsersView(embeds=embeds, **self.kwargs),
+                ephemeral=True,
+                embeds=embeds,
+                )
+    
 #-------------------------------------------------------------
     
-def judge_time_can_converted(year, month, day, hour, minute) -> bool:
+async def activity_modal(ctx, **kwargs):
     try:
-        judge_dt = dt.datetime(year=year, month=month, day=day, hour = hour, minute = minute)
-        return True
+        start_dt = dt.datetime(year=kwargs['year'], month=kwargs['month'], day=kwargs['day'], hour=kwargs['start_hour'], minute=kwargs['start_minute'])
+        finish_dt = dt.datetime(year=kwargs['year'], month=kwargs['month'], day=kwargs['day'], hour=kwargs['finish_hour'], minute=kwargs['finish_minute'])
     except:
-        return False
-    
-#-------------------------------------------------------------
-    
-async def activity_modal(ctx, year, month, day, start_hour, start_minute, finish_hour, finish_minute, prepare_minutes, send_type):
-
-    start_time_can_converted = judge_time_can_converted(year, month, day, start_hour, start_minute)
-    finish_time_can_converted = judge_time_can_converted(year, month, day, finish_hour, finish_minute)
-
-    if not (start_time_can_converted and finish_time_can_converted): 
         await ctx.respond("時間に変換できませんでした。", ephemeral=True)
         return
     
-    start_dt = dt.datetime(year=year, month=month, day=day, hour=start_hour, minute=start_minute)
-    finish_dt = dt.datetime(year=year, month=month, day=day, hour=finish_hour, minute=finish_minute)
-    
-    contact_modal = DmActivityModal(title="活動連絡フォーム", 
-                                    start_dt=start_dt, finish_dt=finish_dt, 
-                                    prepare_minutes=prepare_minutes,
-                                    send_type=send_type
-                                )
+    contact_modal = DmActivityModal(start_dt=start_dt, finish_dt=finish_dt, **kwargs)
 
     await ctx.send_modal(contact_modal)
