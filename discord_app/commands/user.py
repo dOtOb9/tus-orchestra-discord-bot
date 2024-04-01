@@ -40,7 +40,7 @@ async def get_user_info(ctx, member: discord.Member):
         view_attend_code = "閲覧不可"
 
         for channel in bot.guilds[0].channels:
-            if channel.id == getenv("VIEW_ATTEND_CODE_CHANNEL_ID"):
+            if str(channel.id) == getenv("VIEW_ATTEND_CODE_CHANNEL_ID"):
                 for Member in channel.members:
                     if member.id == Member.id:
                         view_attend_code = "閲覧可能"
