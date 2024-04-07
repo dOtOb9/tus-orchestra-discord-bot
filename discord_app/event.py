@@ -12,7 +12,7 @@ async def on_member_update(before, after):
             
 @bot.event
 async def on_ready():
-    print("再起動しました。")
+    print("起動しました。")
 
 
 #================================================================================================
