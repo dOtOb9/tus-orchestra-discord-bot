@@ -19,6 +19,7 @@ class DmActivityModal(discord.ui.Modal):
         self.actibity_date_text = f"{kwargs['year']:04}/{kwargs['month']:02}/{kwargs['day']:02} ({kwargs['start_dt'].strftime('%a')})"
         self.actibity_time_text = f"{kwargs['start_hour']}:{kwargs['start_minute']:02} ~ {kwargs['finish_hour']}:{kwargs['finish_minute']:02}"
         self.meeting_time_text = f"**{meeting_dt.hour}:{meeting_dt.minute:02} 集合**"
+        self.can_use_room = f"**{kwargs['open_hour']}:{kwargs['open_minute']:02} ~ {kwargs['close_hour']}:{kwargs['close_minute']:02}**"
 
         self.google_calendar_plan_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&dates={meeting_dt.strftime('%Y%m%dT%H%M%S')}/{kwargs['finish_dt'].strftime('%Y%m%dT%H%M%S')}"
 
@@ -31,7 +32,7 @@ class DmActivityModal(discord.ui.Modal):
 
         self.add_item(title_input)
         self.add_item(discord.ui.InputText(label="会場", placeholder="GoogleMapで検索できるワードを推奨"))
-        self.add_item(discord.ui.InputText(label="備考", style = discord.InputTextStyle.long, required=False, value="- 部屋\n\n\n- 練習内容\n１コマ目(10:00~11:20)：\n２コマ目(11:35~12:55) ：\n３コマ目(13:35~14:55)：\n４コマ目(15:10~16:30) ："))
+        self.add_item(discord.ui.InputText(label="備考", style = discord.InputTextStyle.long, required=False, value="- 部屋\n\n\n- 練習内容\n__１コマ目(10:00~11:20)__：\n__２コマ目(11:35~12:55)__：\n__３コマ目(13:35~14:55)__：\n__４コマ目(15:10~16:30)__："))
 
 
     async def callback(self, interaction: discord.Interaction):
@@ -57,6 +58,11 @@ class DmActivityModal(discord.ui.Modal):
                     name = "🏢会場",
                     value = f"[{place}](https://www.google.co.jp/maps/search/{place})",
                     inline = False
+                ),
+                discord.EmbedField(
+                    name = "🔓利用可能時間",
+                    value = self.can_use_room, 
+                    inline = True
                 ),
                 discord.EmbedField(
                     name = "📝詳細",

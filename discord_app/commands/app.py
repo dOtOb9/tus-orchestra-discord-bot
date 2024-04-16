@@ -8,6 +8,7 @@ from discord_app.dm.general import DmGeneralModal
 from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
+from discord_app.commands.components import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption
 
 from gas.post import can_send_activity_dm
 
@@ -65,11 +66,20 @@ dm = bot.create_group("dm")
 @dm.command(description="DMで活動連絡を送信します。")
 async def activity(
     ctx, 
-    year: int, month: int, day: int, start_hour :int = 10, 
-    start_minute :int = 0, finish_hour : int = 16, finish_minute : int =  30,
+    year: YearOption(add_desc="活動年が"), 
+    month: MonthOption(add_desc="活動月が"), 
+    day: DayOption(add_desc="活動日が"), 
+    start_hour : HourOption(add_desc="開始時間が") = 10, 
+    start_minute : MinuteOption(add_desc="開始時間が") = 0, 
+    finish_hour : HourOption(add_desc="終了時間が") = 16, 
+    finish_minute : MinuteOption(add_desc="終了時間が") = 0,
+    open_hour : HourOption(add_desc="入室可能時間が") = 9,
+    open_minute : MinuteOption(add_desc="入室可能時間が") = 0,
+    close_hour : HourOption(add_desc="退出最終時間が") = 18,
+    close_minute : MinuteOption(add_desc="退出最終時間が") = 0,
     prepare_minutes : int = 15,
-    tutti: discord.Option(str, choices=["Yes", "No"]) = "No",
-    send_type: discord.Option(str, choices=["Cc", "Bcc"]) = "Cc",
+    tutti: discord.Option(str, choices=["Yes", "No"], description="Tutti練習の場合は`Yes`、それ以外は`No`と入力してください。") = "No",
+    send_type: SendTypeOption() = "Cc",
     ):
 
     params = {
@@ -81,6 +91,10 @@ async def activity(
         "finish_hour": finish_hour,
         "finish_minute": finish_minute,
         "prepare_minutes": prepare_minutes,
+        "open_hour": open_hour,
+        "open_minute": open_minute,
+        "close_hour": close_hour,
+        "close_minute": close_minute,
         "is_tutti": tutti == 'Yes',
         "send_type": send_type,
     }
@@ -92,7 +106,7 @@ async def activity(
 @dm.command(description="DMで通常連絡を送信します。")
 async def normal(
     ctx, 
-    send_type: discord.Option(str, choices=["Cc", "Bcc"]) = "Cc"
+    send_type: SendTypeOption() = "Cc"
     ):
     await ctx.send_modal(DmGeneralModal(title="通常連絡フォーム", send_type = send_type, colour=(0, 255, 255))) # 水色
 
@@ -101,7 +115,7 @@ async def normal(
 @dm.command(description="DMで緊急連絡を送信します。")
 async def alert(
     ctx,
-    send_type: discord.Option(str, choices=["Cc", "Bcc"]) = "Cc"
+    send_type: SendTypeOption() = "Cc"
     ):
     await ctx.send_modal(DmGeneralModal(title="緊急連絡フォーム", send_type = send_type, colour=(255, 0, 0))) # 赤色
 
