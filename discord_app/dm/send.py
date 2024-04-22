@@ -65,7 +65,7 @@ async def verify_send_dm(**kwargs):
     name_list_text = ','.join([f"`{name}`" for name in name_list])
 
     send_list_embed = discord.Embed(
-        title="送信先リスト",
+        title=f"送信先リスト（{len(name_list)}）",
         description=name_list_text,
     )
 

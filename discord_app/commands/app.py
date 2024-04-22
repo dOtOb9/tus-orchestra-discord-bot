@@ -72,7 +72,7 @@ async def activity(
     start_hour : HourOption(add_desc="開始時間が") = 10, 
     start_minute : MinuteOption(add_desc="開始時間が") = 0, 
     finish_hour : HourOption(add_desc="終了時間が") = 16, 
-    finish_minute : MinuteOption(add_desc="終了時間が") = 0,
+    finish_minute : MinuteOption(add_desc="終了時間が") = 30,
     open_hour : HourOption(add_desc="入室可能時間が") = 9,
     open_minute : MinuteOption(add_desc="入室可能時間が") = 0,
     close_hour : HourOption(add_desc="退出最終時間が") = 18,

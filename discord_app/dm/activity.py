@@ -19,9 +19,10 @@ class DmActivityModal(discord.ui.Modal):
         self.actibity_date_text = f"{kwargs['year']:04}/{kwargs['month']:02}/{kwargs['day']:02} ({kwargs['start_dt'].strftime('%a')})"
         self.actibity_time_text = f"{kwargs['start_hour']}:{kwargs['start_minute']:02} ~ {kwargs['finish_hour']}:{kwargs['finish_minute']:02}"
         self.meeting_time_text = f"**{meeting_dt.hour}:{meeting_dt.minute:02} 集合**"
-        self.can_use_room = f"**{kwargs['open_hour']}:{kwargs['open_minute']:02} ~ {kwargs['close_hour']}:{kwargs['close_minute']:02}**"
-
         self.google_calendar_plan_url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&dates={meeting_dt.strftime('%Y%m%dT%H%M%S')}/{kwargs['finish_dt'].strftime('%Y%m%dT%H%M%S')}"
+        
+
+        allowed_room_time_text = f"**{kwargs['open_hour']}:{kwargs['open_minute']:02} ~ {kwargs['close_hour']}:{kwargs['close_minute']:02}**"
 
         #----------------------------------------------------------------
 
@@ -32,16 +33,19 @@ class DmActivityModal(discord.ui.Modal):
 
         self.add_item(title_input)
         self.add_item(discord.ui.InputText(label="会場", placeholder="GoogleMapで検索できるワードを推奨"))
-        self.add_item(discord.ui.InputText(label="備考", style = discord.InputTextStyle.long, required=False, value="- 部屋\n\n\n- 練習内容\n__１コマ目(10:00~11:20)__：\n__２コマ目(11:35~12:55)__：\n__３コマ目(13:35~14:55)__：\n__４コマ目(15:10~16:30)__："))
+        self.add_item(discord.ui.InputText(label="利用可能時間", value=allowed_room_time_text, style = discord.InputTextStyle.long))
+        self.add_item(discord.ui.InputText(label="詳細", style = discord.InputTextStyle.long, required=False, value="- 部屋\n\n\n- 練習内容\n__１コマ目(10:00~11:20)__：\n__２コマ目(11:35~12:55)__：\n__３コマ目(13:35~14:55)__：\n__４コマ目(15:10~16:30)__："))
 
 
     async def callback(self, interaction: discord.Interaction):
         title = self.children[0].value
         place = self.children[1].value
-        content = self.children[2].value
+        allowed_room_text = self.children[2].value
+        content = self.children[3].value
 
         main_embed = discord.Embed(
             title=title,
+            url=getenv("SCHEDULE_FILE_URL"),
             colour = discord.Color.from_rgb(0, 255, 0),
             fields = [
                 discord.EmbedField(
@@ -61,7 +65,7 @@ class DmActivityModal(discord.ui.Modal):
                 ),
                 discord.EmbedField(
                     name = "🔓利用可能時間",
-                    value = self.can_use_room, 
+                    value = allowed_room_text, 
                     inline = True
                 ),
                 discord.EmbedField(
@@ -93,9 +97,11 @@ class DmActivityModal(discord.ui.Modal):
 
         #--------------------------------------------------------------------
 
+        details_text = main_embed.fields[3].name + "\n" + allowed_room_text + "\n\n" + main_embed.fields[4].name + "\n"+content
+
         google_calendar_embed = discord.Embed(
             title = "カレンダーに追加",
-            url = self.google_calendar_plan_url + f"&text={quote(title)}&location={quote(place)}&details={quote(content)}",
+            url = self.google_calendar_plan_url + f"&text={quote(title)}&location={quote(place)}&details={quote(details_text)}",
             colour = discord.Color.dark_blue()
         )
 
