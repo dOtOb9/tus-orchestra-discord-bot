@@ -28,23 +28,30 @@ class KeyButton(discord.ui.Button):
 
 class KeyModal(discord.ui.Modal):
     def __init__(self, **kwargs) -> None:
-        super().__init__(title=kwargs['label'])
+        super().__init__(title='部屋開閉連絡')
         self.kwargs = kwargs
 
         self.add_item(discord.ui.InputText(
+            value=self.kwargs['label'],
             label="説明", 
+            )
+        )
+
+        self.add_item(discord.ui.InputText(
+            label="より詳細な説明",
             placeholder="何も書かなくても大丈夫です。",
-            style=discord.InputTextStyle.long, 
+            style=discord.InputTextStyle.long,
             required=False
             )
         )
 
     
     async def callback(self, interaction):
-        description = self.children[0].value
+        text = self.children[0].value
+        description = self.children[1].value
 
         key_embed = discord.Embed(
-            title=self.kwargs['label'],
+            title=text,
             description=description,
             timestamp=dt.datetime.now(),
         )

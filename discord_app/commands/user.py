@@ -33,9 +33,9 @@ async def get_user_info(ctx, member: discord.Member):
         """
 
         if result_json["practice_contact"]:
-            practice_contact = "権限有り"
+            practice_contact = "受信する"
         else:
-            practice_contact = "権限無し"
+            practice_contact = "受信しない"
 
         view_attend_code = "閲覧不可"
 
@@ -51,7 +51,7 @@ async def get_user_info(ctx, member: discord.Member):
             url=getenv("SPREADSHEET_URL"),
             fields=[
                 discord.EmbedField(name="📺出席コード閲覧", value=view_attend_code, inline=True),
-                discord.EmbedField(name="📧乗り番連絡受信", value=practice_contact, inline=True),
+                discord.EmbedField(name="📧乗り番連絡", value=practice_contact, inline=True),
                 discord.EmbedField(name="📈通常練習", value=result_json['attend_status'], inline=False),
                 discord.EmbedField(name="📈Tutti練習", value=result_json['tutti_attend_status'], inline=False),
             ],

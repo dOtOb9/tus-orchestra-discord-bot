@@ -1,10 +1,11 @@
 import discord
 
 from discord_app.dm.select_user import SelectSendView
+from discord_app.ch.send import ChannelSendButton
 
 #-------------------------------------------------------------
 
-class DmGeneralModal(discord.ui.Modal):
+class generalMessageModal(discord.ui.Modal):
     def __init__(self, **kwargs):
         super().__init__(title=kwargs['title'])
         self.kwargs=kwargs
@@ -18,7 +19,7 @@ class DmGeneralModal(discord.ui.Modal):
             title = self.children[0].value,
             url = self.children[1].value,
             description=self.children[2].value,
-            colour=discord.Color.from_rgb(r=self.kwargs['colour'][0], g=self.kwargs['colour'][1], b=self.kwargs['colour'][2])
+            colour=self.kwargs['colour']
         )
 
         embed.set_author(
@@ -28,11 +29,14 @@ class DmGeneralModal(discord.ui.Modal):
         )
 
         try:
-            await interaction.response.send_message(
-                "送信先を選んでください。",
-                view=SelectSendView(embeds=[embed], **self.kwargs),
-                ephemeral=True,
-                embeds=[embed]
-            )
-        except:
+            if self.kwargs['mode'] == 'dm':
+                await interaction.response.send_message(
+                    "送信先を選んでください。",
+                    view=SelectSendView(embeds=[embed], **self.kwargs),
+                    ephemeral=True,
+                    embeds=[embed]
+                )
+            else:
+                await interaction.response.send_message(view=discord.ui.View(ChannelSendButton(embed=embed)), ephemeral=True, embed=embed)
+        except discord.errors.HTTPException:
             await interaction.response.send_message("有効なURLを指定してください。", ephemeral=True)

@@ -1,14 +1,13 @@
 import discord
 
 from discord_app.bot import bot
-from discord_app.ch.general import ChannelGeneralModal
+from discord_app.general_embed import generalMessageModal
 from discord_app.ch.key import KeyView
 from discord_app.ch.send import ChannelSendButton
-from discord_app.dm.general import DmGeneralModal
 from discord_app.dm.activity import activity_modal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
-from discord_app.commands.components import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption
+from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption
 
 from gas.post import can_send_activity_dm
 
@@ -28,13 +27,13 @@ channel = bot.create_group("ch")
 
 @channel.command(description="チャンネルに通常連絡を送信します。")
 async def normal(ctx):
-    await ctx.send_modal(ChannelGeneralModal(title="通常連絡フォーム", colour=(0, 255, 255))) # 水色
+    await ctx.send_modal(generalMessageModal(title="通常連絡フォーム",mode='ch', colour=discord.Color.from_rgb(r=0, g=255, b=255))) # 水色
 
 #-------------------------------------------------------------
     
 @channel.command(description="チャンネルに緊急連絡を送信します。")
 async def alert(ctx):
-    await ctx.send_modal(ChannelGeneralModal(title="緊急連絡フォーム", colour=(255, 0, 0))) # 赤色
+    await ctx.send_modal(generalMessageModal(title="緊急連絡フォーム",mode='ch', colour=discord.Color.from_rgb(r=255, g=0, b=0))) # 赤色
 
 #-------------------------------------------------------------
     
@@ -108,7 +107,7 @@ async def normal(
     ctx, 
     send_type: SendTypeOption() = "Cc"
     ):
-    await ctx.send_modal(DmGeneralModal(title="通常連絡フォーム", send_type = send_type, colour=(0, 255, 255))) # 水色
+    await ctx.send_modal(generalMessageModal(title="通常連絡フォーム", mode='dm', send_type = send_type, colour=discord.Color.from_rgb(r=0, g=255, b=255))) # 水色
 
 #-------------------------------------------------------------
     
@@ -117,7 +116,7 @@ async def alert(
     ctx,
     send_type: SendTypeOption() = "Cc"
     ):
-    await ctx.send_modal(DmGeneralModal(title="緊急連絡フォーム", send_type = send_type, colour=(255, 0, 0))) # 赤色
+    await ctx.send_modal(generalMessageModal(title="緊急連絡フォーム", mode='dm', send_type = send_type, colour=discord.Color.from_rgb(r=255, g=0, b=0))) # 赤色
 
 #-------------------------------------------------------------
     

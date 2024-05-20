@@ -130,8 +130,8 @@ class SelectRolesView(discord.ui.View):
         
         await verify_send_dm_text(
             member_list = list(set(member_list)), 
-            kwargs = self.kwargs,
-            interaction = interaction
+            interaction = interaction,
+            **self.kwargs
             )
 
 
