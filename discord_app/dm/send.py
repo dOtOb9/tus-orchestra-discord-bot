@@ -62,6 +62,8 @@ async def verify_send_dm(**kwargs):
     #---------------------------------------------------------------------------------------------------------------
 
     name_list = [member.display_name for member in kwargs['member_list']]
+    sorted(name_list)
+
     name_list_text = ','.join([f"`{name}`" for name in name_list])
 
     send_list_embed = discord.Embed(

@@ -81,6 +81,11 @@ async def activity(
     send_type: SendTypeOption() = "Cc",
     ):
 
+    # Tutti練習の場合、開始時間と終了時間のデフォルト値を変更
+    if tutti == "Yes" and open_hour == 9 and open_minute == 0 and close_hour == 18 and close_minute == 0:
+        open_hour = 7
+        close_hour = 21
+
     params = {
         "year": year,
         "month": month,
@@ -97,6 +102,7 @@ async def activity(
         "is_tutti": tutti == 'Yes',
         "send_type": send_type,
     }
+
 
     await activity_modal(ctx, **params)
 
