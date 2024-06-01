@@ -1,5 +1,6 @@
 import discord
 
+from discord_app.dm.message import DmMessage
 from discord_app.dm.select_user import SelectSendView
 from discord_app.ch.send import ChannelSendButton
 
@@ -30,11 +31,16 @@ class generalMessageModal(discord.ui.Modal):
 
         try:
             if self.kwargs['mode'] == 'dm':
+                dm_message = DmMessage()
+
+                dm_message.embeds = [embed]
+                dm_message.send_type = self.kwargs['send_type']
+
                 await interaction.response.send_message(
                     "送信先を選んでください。",
-                    view=SelectSendView(embeds=[embed], **self.kwargs),
+                    view=SelectSendView(dm_message=dm_message),
                     ephemeral=True,
-                    embeds=[embed]
+                    embeds=dm_message.embeds,
                 )
             else:
                 await interaction.response.send_message(view=discord.ui.View(ChannelSendButton(embed=embed)), ephemeral=True, embed=embed)

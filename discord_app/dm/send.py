@@ -3,6 +3,7 @@ from os import getenv
 import discord
 
 from discord_app.bot import bot
+from discord_app.dm.message import DmMessage
 from discord_app.dm.ui import viewSendListButton
 from discord_app.delete import deleteMessageView, deleteMessageButton
 from discord_app.verify_attend import AttendAuthButton 
@@ -10,89 +11,65 @@ from gas.get import can_send_activity_dm
 from gas.post import generate_activity_date
 
 
+class sendButton(discord.ui.Button):
+    def __init__(self, dm_message: DmMessage, label: str = None, style: discord.ButtonStyle = discord.ButtonStyle.gray, emoji: str = None, row: int = None) -> None:
+        super().__init__(label=label, style=style, emoji=emoji, row=row)
+        self.dm_message = dm_message
+
+    
+    async def callback(self, interaction):
+        self.disabled = True
+        self.label = "送信済み"
+        await interaction.response.edit_message(view=self.view)
+
+        if self.dm_message.attend_type:
+            await generate_activity_date(date_text=self.dm_message.activity.time.start.strftime("%Y/%m/%d"), is_tutti=self.dm_message.activity.tutti) # GASと連携
+
+        for member in self.dm_message.send_list: 
+            await member.send(embeds=self.dm_message.embeds, 
+                              view=self.dm_message.set_view(),
+                              )
+            
+#================================================================================================================
+
 class SendDmView(discord.ui.View):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, dm_message) -> None:
         super().__init__()
-        self.kwargs = kwargs
 
         self.timeout = 60*60*24*30 # 30日間有効
         self.disable_on_timeout = True
 
         self.add_item(viewSendListButton(label="送信先を非表示", disabled=True))
         self.add_item(deleteMessageButton(row=4))
+        self.add_item(sendButton(label="送信する", emoji="📧", row=4, style=discord.ButtonStyle.success, dm_message=dm_message))
 
-        if kwargs['gas']:
+        if dm_message.attend_type:
             self.add_item(AttendAuthButton(disabled=True))
-
-
-    @discord.ui.button(label="送信する", emoji="📧", row=4, style=discord.ButtonStyle.success)
-    async def send_callback(self, button, interaction):
-        button.disabled = True
-        button.label = "送信済み"
-        await interaction.response.edit_message(view=self)
-
-        view = discord.ui.View(timeout=60*60*24*30, disable_on_timeout=True) # 30日間有効
-
-        view.add_item(viewSendListButton(self.kwargs['send_list_embed'], times=0, label="送信先を表示", row=0))
-
-        if self.kwargs['gas']:
-            # 活動日から出欠表の列を生成する
-            date_value = self.kwargs['embeds'][0].fields[0].value # 日付の情報を取得
-            date_text = date_value[:date_value.find("(")]
-            await generate_activity_date(date_text=date_text, is_tutti=self.kwargs['is_tutti']) # GASと連携
-            #----------------------------------------------------------------------------
-
-            view.add_item(AttendAuthButton(row=0))
-
-
-        for member in self.kwargs['member_list']: 
-            await member.send(embeds=self.kwargs['embeds'], 
-                              view=view, 
-                              )
+        
 
 #================================================================================================================
 
-async def verify_send_dm(**kwargs):
-    for member in kwargs['member_list']:
+async def verify_send_dm(interaction: discord.Interaction, dm_message: DmMessage):
+    for member in dm_message.send_list:
         if member.bot:
-            kwargs['member_list'].remove(member)
+            dm_message.send_list.remove(member)
 
-
-    # 送信先リストの埋め込みテキストを作成
-    #---------------------------------------------------------------------------------------------------------------
-
-    name_list = [member.display_name for member in kwargs['member_list']]
-    name_list = sorted(name_list)
-
-    name_list_text = ','.join([f"`{name}`" for name in name_list])
-
-    send_list_embed = discord.Embed(
-        title=f"送信先リスト（{len(name_list)}）",
-        description=name_list_text,
-    )
-
-    if kwargs['send_type'] == "Bcc":
-        send_list_embed.title += " (非公開）"
-
-    #---------------------------------------------------------------------------------------------------------------
-
-    await kwargs['interaction'].user.send(
-        embeds = kwargs['embeds'] + [send_list_embed],
-        view=SendDmView(send_list_embed=send_list_embed, **kwargs),
+    await interaction.user.send(
+        embeds = dm_message.embeds + [dm_message.generate_send_list_embed()],
+        view=SendDmView(dm_message=dm_message),
     )
 
 #================================================================================================================
         
-async def verify_send_dm_text(**kwargs):
-    kwargs['gas'] = False
-    await kwargs['interaction'].response.send_message("送信先を確認しています...", ephemeral=True)
-    await verify_send_dm(**kwargs)
+async def verify_send_dm_text(dm_message: DmMessage, interaction: discord.Interaction):
+    await interaction.response.send_message("送信先を確認しています...", ephemeral=True)
+    await verify_send_dm(dm_message=dm_message, interaction=interaction)
 
 #================================================================================================================
 
-async def verify_gas_send_dm(**kwargs):
-    await kwargs['interaction'].response.send_message("送信先を取得しています...", ephemeral=True)
-    json_data =  await can_send_activity_dm(kwargs['mode'])
+async def verify_gas_send_dm(party: list, dm_message: DmMessage, interaction: discord.Interaction):
+    await interaction.response.send_message("送信先を取得しています...", ephemeral=True)
+    json_data =  await can_send_activity_dm(party)
 
 
     # 例外処理
@@ -107,19 +84,20 @@ async def verify_gas_send_dm(**kwargs):
             icon_url=getenv("SPREADSHEET_ICON_URL"),
             url=getenv("SPREADSHEET_URL"),  
         )
-        await kwargs['interaction'].user.send(embed=embed, view=deleteMessageView())
+        await dm_message.interaction.user.send(embed=embed, view=deleteMessageView())
         return
     #----------------------------------------------------------------
 
 
-    member_id_list = list(json_data['member_list'])
+    send_id_list = list(json_data['member_list'])
 
-    member_list = []
+    send_list = []
 
     for member in bot.guilds[0].members:
-        if str(member.id) in member_id_list:
-            member_list.append(member)
+        if str(member.id) in send_id_list:
+            send_list.append(member)
 
-    kwargs['gas'] = kwargs['embeds'][0].colour == discord.Colour.from_rgb(0, 255, 0) # 埋め込みテキストの色が緑の場合 → つまり、活動連絡の場合
+    dm_message.send_list = send_list
+    dm_message.attend_type = dm_message.embeds[0].colour == discord.Colour.from_rgb(0, 255, 0) # 埋め込みテキストの色が緑の場合 → つまり、活動連絡の場合
 
-    await verify_send_dm(member_list=member_list, **kwargs)
+    await verify_send_dm(interaction=interaction, dm_message=dm_message)

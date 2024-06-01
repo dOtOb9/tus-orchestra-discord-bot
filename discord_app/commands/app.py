@@ -1,10 +1,12 @@
 import discord
+from datetime import datetime
 
 from discord_app.bot import bot
 from discord_app.general_embed import generalMessageModal
 from discord_app.ch.key import KeyView
 from discord_app.ch.send import ChannelSendButton
-from discord_app.dm.activity import activity_modal
+from discord_app.dm.message import AcrivityDetails, DmMessage
+from discord_app.dm.activity import ActivityModal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
 from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption
@@ -86,25 +88,33 @@ async def activity(
         open_hour = 7
         close_hour = 21
 
-    params = {
-        "year": year,
-        "month": month,
-        "day": day,
-        "start_hour": start_hour,
-        "start_minute": start_minute,
-        "finish_hour": finish_hour,
-        "finish_minute": finish_minute,
-        "prepare_minutes": prepare_minutes,
-        "open_hour": open_hour,
-        "open_minute": open_minute,
-        "close_hour": close_hour,
-        "close_minute": close_minute,
-        "is_tutti": tutti == 'Yes',
-        "send_type": send_type,
-    }
+    try:
+        default = datetime(year=year, month=month, day=day)
+    except:
+        await ctx.respond(f"存在しない日付です。\nyear: {year}\nmonth: {month}\nday: {day}", ephemeral=True)
+        return 
 
 
-    await activity_modal(ctx, **params)
+    dm_message = DmMessage()
+
+    dm_message.activity = AcrivityDetails(year=year, month=month, day=day)
+    dm_message.send_type = send_type
+
+    #------------------------------------------------------------------------------------------------------
+    # 活動時間の設定
+
+    dm_message.activity.time.set_start_finish(start=(start_hour, start_minute), finish=(finish_hour, finish_minute))
+    dm_message.activity.time.set_open_close(open=(open_hour, open_minute), close=(close_hour, close_minute))
+    dm_message.activity.time.set_meeting(prepare_minutes)
+
+    #-----------------------------------------------------------------------------------------------------
+    # Tuttiの設定
+    if is_tutti := tutti == 'Yes':
+        dm_message.activity.tutti = is_tutti
+        dm_message.activity.title = "Tutti"
+        dm_message.activity.place = "野田キャンパス多目的トレーニングホール"
+
+    await ctx.send_modal(ActivityModal(dm_message=dm_message))
 
 #-------------------------------------------------------------
 
