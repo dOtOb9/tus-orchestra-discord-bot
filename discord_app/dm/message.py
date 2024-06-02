@@ -130,6 +130,7 @@ class DmMessage():
     def __init__(self):
         self.attend_type: bool = False
         self.view = discord.ui.View()
+        self.view_editted = False
         self.activity: AcrivityDetails = None
         self.send_type: str = None
         self.send_list: list= None
@@ -156,7 +157,7 @@ class DmMessage():
     
 
     def set_view(self):
-        if self.view != discord.ui.View():
+        if self.view_editted:
             return self.view
 
 
@@ -164,5 +165,8 @@ class DmMessage():
         
         if self.attend_type:
             self.view.add_item(AttendAuthButton())
+
+        
+        self.view_editted = True
 
         return self.view
