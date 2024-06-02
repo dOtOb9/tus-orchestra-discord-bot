@@ -70,7 +70,7 @@ class AcrivityDetails():
                 ),
                 discord.EmbedField(
                     name = "🔓利用可能時間",
-                    value = f"**{self.time.open.strftime('%H%M')}~{self.time.close.strftime('%H%M')}**", 
+                    value = f"**{self.time.open.strftime('%H:%M')}~{self.time.close.strftime('%H:%M')}**", 
                     inline = True
                 ),
                 discord.EmbedField(
