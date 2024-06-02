@@ -32,7 +32,7 @@ class ActivityTime():
 
 
     def set_meeting(self, minutes : int):
-        self.meeting = self.open - timedelta(minutes=minutes)
+        self.meeting = self.start - timedelta(minutes=minutes)
 
 
 #=====================================================================================================
@@ -156,6 +156,10 @@ class DmMessage():
     
 
     def set_view(self):
+        if self.view != discord.ui.View():
+            return self.view
+
+
         self.view.add_item(viewSendListButton(send_list_embed=self.send_list_embed, disabled = self.send_type == "Bcc"))
         
         if self.attend_type:
