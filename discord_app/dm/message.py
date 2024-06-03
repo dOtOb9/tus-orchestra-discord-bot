@@ -129,7 +129,7 @@ class AcrivityDetails():
 class DmMessage():
     def __init__(self):
         self.attend_type: bool = False
-        self.view = discord.ui.View()
+        self.view = discord.ui.View(disable_on_timeout=True, timeout=60 * 60 * 24 * 30) # 30日間
         self.view_editted = False
         self.activity: AcrivityDetails = None
         self.send_type: str = None
