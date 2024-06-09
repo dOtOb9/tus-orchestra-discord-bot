@@ -29,3 +29,7 @@ class SendTypeOption(discord.Option):
     def __init__(self, **kwargs):
         super().__init__(str, choices=["Cc", "Bcc"], description="送信先を表示可とする場合は`Cc`、それ以外は`Bcc`と入力してください。", **kwargs)
 
+
+class CampusOption(discord.Option):
+    def __init__(self):
+        super().__init__(str, choices=['野田', '葛飾', '神楽坂'], description="キャンパスを選択してください。")
