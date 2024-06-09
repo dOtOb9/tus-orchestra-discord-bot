@@ -102,7 +102,7 @@ class AcrivityDetails():
     
     
     def set_google_calendar_embed(self) -> discord.Embed:
-        details_text = f"{self.time.open.strftime('%H%M')}~{self.time.close.strftime('%H%M')}\n\n{self.description}"
+        details_text = f"{self.time.open.strftime('%H:%M')}~{self.time.close.strftime('%H:%M')}\n\n{self.description}"
         google_calendar_embed = discord.Embed(
             title = "カレンダーに追加",
             url = f"https://calendar.google.com/calendar/render?action=TEMPLATE&dates={self.time.meeting.strftime('%Y%m%dT%H%M%S')}/{self.time.finish.strftime('%Y%m%dT%H%M%S')}&text={quote(self.title)}&location={quote(self.place)}&details=🔓利用可能時間\n{quote(details_text)}",

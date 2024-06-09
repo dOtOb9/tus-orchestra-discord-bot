@@ -9,7 +9,7 @@ from discord_app.dm.message import AcrivityDetails, DmMessage
 from discord_app.dm.activity import ActivityModal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
-from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption
+from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption, CampusOption
 
 from gas.post import can_send_activity_dm
 
@@ -40,7 +40,7 @@ async def alert(ctx):
 #-------------------------------------------------------------
     
 @channel.command(description="鍵開閉連絡を送信します。")
-async def key(ctx):
+async def key(ctx, campus: CampusOption()):
     start_embed = discord.Embed(
         title="開始",
     )
@@ -51,11 +51,24 @@ async def key(ctx):
         url=ctx.user.jump_url,
     )
 
-    view = KeyView()
-    view.disable_all_items()
-    view.add_item(ChannelSendButton(view=KeyView(), embed=start_embed))
+    for view in [pre_view:=KeyView(), next_view:=KeyView()]:
+        match campus:
+            case "野田":
+                view.create_buttons_for_notice_key_place(places=["部室", "トレ棟", "講義棟"])
 
-    await ctx.response.send_message(view=view, embed=start_embed, ephemeral=True)
+            case "葛飾":
+                view.create_buttons_for_notice_key_place(places=["部室", "防音室"])
+
+            case "神楽坂":
+                view.create_buttons_for_notice_key_place(places=["部室", "防音室"])
+
+        
+
+    pre_view.disable_all_items()
+
+    pre_view.add_item(ChannelSendButton(view=next_view, embed=start_embed))
+
+    await ctx.response.send_message(view=pre_view, embed=start_embed, ephemeral=True)
 
 #-------------------------------------------------------------
     
