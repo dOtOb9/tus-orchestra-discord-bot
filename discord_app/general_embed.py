@@ -14,6 +14,7 @@ class generalMessageModal(discord.ui.Modal):
         self.add_item(discord.ui.InputText(label="タイトル"))
         self.add_item(discord.ui.InputText(label="URL", placeholder="有効なURLを指定してください。", required=False))
         self.add_item(discord.ui.InputText(label="内容", style = discord.InputTextStyle.long))
+        self.add_item(discord.ui.InputText(label="画像URL", placeholder="有効なURLを指定してください。", required=False))
 
     async def callback(self, interaction: discord.Interaction):
         embed = discord.Embed(
@@ -22,6 +23,8 @@ class generalMessageModal(discord.ui.Modal):
             description=self.children[2].value,
             colour=self.kwargs['colour']
         )
+
+        embed.set_image(url=self.children[3].value)
 
         embed.set_author(
             name = interaction.user.display_name,
