@@ -1,6 +1,8 @@
 from discord_app.bot import bot
 from gas.post import user_post
 
+import discord
+
 #================================================================================================
         
 @bot.event
@@ -39,3 +41,16 @@ async def member_update(member):
     }
 
     await user_post(json_data)
+
+
+#================================================================================================
+@bot.event
+async def on_message(message: discord.Message):
+    if message.author.bot: return
+    
+    if message.channel.type == 'private': return  # DM以外のチャンネルでのメッセージは無視
+
+
+    if message.attachments != []:
+        for attachment in message.attachments:
+            await message.author.send(f"ファイルを受け取りました。\nファイル名: {attachment.filename}\nファイルサイズ: {attachment.size}byte\nファイルURL: {attachment.url}")
