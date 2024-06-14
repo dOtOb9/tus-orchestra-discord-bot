@@ -33,17 +33,17 @@ class KeyButton(discord.ui.Button):
         self.label = label
 
     async def callback(self, interaction):
-        await interaction.response.send_modal(KeyModal(pre_button_label=self.label, pre_view=self.view))
+        await interaction.response.send_modal(KeyModal(description=self.label, pre_view=self.view))
 
 
 class KeyModal(discord.ui.Modal):
-    def __init__(self, pre_button_label: str, pre_view: discord.ui.View, title: str = '部屋開閉連絡') -> None:
+    def __init__(self, content: str, pre_view: discord.ui.View, title: str = '部屋開閉連絡') -> None:
         super().__init__(title=title)
         self.pre_view = pre_view
 
 
         self.add_item(discord.ui.InputText(
-            value=pre_button_label,
+            value=content,
             label="説明", 
             )
         )
@@ -93,7 +93,7 @@ class KeyPlaceButton(discord.ui.Button):
 
 class WhereIsKeyModal(KeyModal):
     def __init__(self, pre_button_label: str, pre_view: discord.ui.View, is_place: bool = True) -> None:
-        super().__init__(title="鍵の場所連絡", pre_button_label=pre_button_label, pre_view=pre_view)
+        super().__init__(title="鍵の場所連絡", content=pre_button_label, pre_view=pre_view)
 
         if not is_place:
             self.children[0].value = ""
