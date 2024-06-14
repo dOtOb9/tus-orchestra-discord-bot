@@ -33,7 +33,7 @@ class KeyButton(discord.ui.Button):
         self.label = label
 
     async def callback(self, interaction):
-        await interaction.response.send_modal(KeyModal(description=self.label, pre_view=self.view))
+        await interaction.response.send_modal(KeyModal(content=self.label, pre_view=self.view))
 
 
 class KeyModal(discord.ui.Modal):
@@ -88,19 +88,22 @@ class KeyPlaceButton(discord.ui.Button):
         self.is_place = is_place
 
     async def callback(self, interaction):
-        await interaction.response.send_modal(WhereIsKeyModal(pre_button_label=self.label, pre_view=self.view, is_place=self.is_place))
+        place = self.label
+        
+        if not self.is_place: content = ""
+        
+        content = f"鍵の場所：　{place}"
+
+        await interaction.response.send_modal(WhereIsKeyModal(content=content, pre_view=self.view, is_place=self.is_place))
 
 
 class WhereIsKeyModal(KeyModal):
-    def __init__(self, pre_button_label: str, pre_view: discord.ui.View, is_place: bool = True) -> None:
-        super().__init__(title="鍵の場所連絡", content=pre_button_label, pre_view=pre_view)
-
-        if not is_place:
-            self.children[0].value = ""
+    def __init__(self, content: str, pre_view: discord.ui.View) -> None:
+        super().__init__(title="鍵の場所連絡", content=content, pre_view=pre_view)
 
 
     async def callback(self, interaction: discord.Interaction):
-        text = f"鍵の場所：　{self.children[0].value}"
+        text = self.children[0].value
         description = self.children[1].value
 
         key_embed = discord.Embed(
