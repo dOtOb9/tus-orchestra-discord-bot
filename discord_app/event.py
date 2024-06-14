@@ -1,10 +1,6 @@
 from discord_app.bot import bot
 from gas.post import user_post
 
-from os import getenv
-
-
-import discord
 
 #================================================================================================
         
@@ -18,11 +14,6 @@ async def on_member_update(before, after):
 @bot.event
 async def on_ready():
     print("起動しました。")
-
-    for key_channel_id in list(getenv("KEY_CHANNEL_ID").split(",")):
-        for channel in bot.guilds[0].channels:
-            if channel.id == key_channel_id:
-                await channel.send()
 
 
 #================================================================================================

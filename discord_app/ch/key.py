@@ -90,11 +90,11 @@ class KeyPlaceButton(discord.ui.Button):
     async def callback(self, interaction):
         place = self.label
         
-        if not self.is_place: content = ""
+        if not self.is_place: place = ""
         
-        content = f"鍵の場所：　{place}"
+        content = f"鍵の場所：{place}"
 
-        await interaction.response.send_modal(WhereIsKeyModal(content=content, pre_view=self.view, is_place=self.is_place))
+        await interaction.response.send_modal(WhereIsKeyModal(content=content, pre_view=self.view))
 
 
 class WhereIsKeyModal(KeyModal):
