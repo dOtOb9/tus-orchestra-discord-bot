@@ -5,11 +5,11 @@ from discord_app.bot import bot
 from discord_app.general_embed import generalMessageModal
 from discord_app.ch.key import KeyView
 from discord_app.ch.send import ChannelSendButton
-from discord_app.dm.message import AcrivityDetails, DmMessage
+from discord_app.dm.message import ActivityTime, ActivityTimeSlots, AcrivityDetails, DmMessage
 from discord_app.dm.activity import ActivityModal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
-from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption, CampusOption
+from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption, TrainingOption
 
 from gas.post import can_send_activity_dm
 
@@ -40,7 +40,7 @@ async def alert(ctx):
 #-------------------------------------------------------------
     
 @channel.command(description="鍵開閉連絡を送信します。")
-async def key(ctx, campus: CampusOption()):
+async def key(ctx):
     start_embed = discord.Embed(
         title="開始",
     )
@@ -51,22 +51,11 @@ async def key(ctx, campus: CampusOption()):
         url=ctx.user.jump_url,
     )
 
-    for view in [pre_view:=KeyView(), next_view:=KeyView()]:
-        match campus:
-            case "野田":
-                view.create_buttons_for_notice_key_place(places=["部室", "トレ棟", "講義棟"])
-
-            case "葛飾":
-                view.create_buttons_for_notice_key_place(places=["部室", "防音室"])
-
-            case "神楽坂":
-                view.create_buttons_for_notice_key_place(places=["部室", "防音室"])
-
-        
+    pre_view = KeyView()
 
     pre_view.disable_all_items()
 
-    pre_view.add_item(ChannelSendButton(view=next_view, embed=start_embed))
+    pre_view.add_item(ChannelSendButton(view=KeyView(), embed=start_embed))
 
     await ctx.response.send_message(view=pre_view, embed=start_embed, ephemeral=True)
 
@@ -83,6 +72,11 @@ async def activity(
     year: YearOption(add_desc="活動年が"), 
     month: MonthOption(add_desc="活動月が"), 
     day: DayOption(add_desc="活動日が"), 
+    first_training: TrainingOption(),
+    second_training: TrainingOption(),
+    third_training: TrainingOption(),
+    forth_training: TrainingOption(),
+    tutti: discord.Option(str, choices=["Yes", "No"], description="Tutti練習の場合は`Yes`、それ以外は`No`と入力してください。"),
     start_hour : HourOption(add_desc="開始時間が") = 10, 
     start_minute : MinuteOption(add_desc="開始時間が") = 0, 
     finish_hour : HourOption(add_desc="終了時間が") = 16, 
@@ -92,7 +86,6 @@ async def activity(
     close_hour : HourOption(add_desc="退出最終時間が") = 18,
     close_minute : MinuteOption(add_desc="退出最終時間が") = 0,
     prepare_minutes : int = 15,
-    tutti: discord.Option(str, choices=["Yes", "No"], description="Tutti練習の場合は`Yes`、それ以外は`No`と入力してください。") = "No",
     send_type: SendTypeOption() = "Cc",
     ):
 
@@ -100,6 +93,7 @@ async def activity(
     if tutti == "Yes" and open_hour == 9 and open_minute == 0 and close_hour == 18 and close_minute == 0:
         open_hour = 7
         close_hour = 21
+        prepare_minutes = 30
 
     try:
         default = datetime(year=year, month=month, day=day)
@@ -110,7 +104,11 @@ async def activity(
 
     dm_message = DmMessage()
 
-    dm_message.activity = AcrivityDetails(year=year, month=month, day=day)
+    activity_time = ActivityTime(year=year, month=month, day=day)
+
+    time_slots = ActivityTimeSlots(first=first_training, second=second_training, third=third_training, forth=forth_training)
+
+    dm_message.activity = AcrivityDetails(time=activity_time, time_slots=time_slots)
     dm_message.send_type = send_type
 
     #------------------------------------------------------------------------------------------------------

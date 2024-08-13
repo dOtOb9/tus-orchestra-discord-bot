@@ -13,7 +13,8 @@ class ActivityModal(discord.ui.Modal):
 
         self.add_item(discord.ui.InputText(label='タイトル', placeholder="練習内容を入力", value=dm_message.activity.title))
         self.add_item(discord.ui.InputText(label="会場", placeholder="GoogleMapで検索できるワードを推奨", value=dm_message.activity.place))
-        self.add_item(discord.ui.InputText(label="詳細", style = discord.InputTextStyle.long, required=False, value="- 部屋\n\n\n- 練習内容\n__１コマ目(10:00~11:20)__：\n__２コマ目(11:35~12:55)__：\n__３コマ目(13:35~14:55)__：\n__４コマ目(15:10~16:30)__："))
+        self.add_item(discord.ui.InputText(label="詳細", style = discord.InputTextStyle.long, required=False, 
+                                           value=f"- 部屋\n\n\n- 練習内容\n__１コマ目(10:00~11:20)__：{dm_message.activity.time_slots.first}\n__２コマ目(11:35~12:55)__：{dm_message.activity.time_slots.second}\n__３コマ目(13:35~14:55)__：{dm_message.activity.time_slots.third}\n__４コマ目(15:10~16:30)__：{dm_message.activity.time_slots.forth}"))
 
 
     async def callback(self, interaction: discord.Interaction):

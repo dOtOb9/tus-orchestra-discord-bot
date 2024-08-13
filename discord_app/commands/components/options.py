@@ -33,3 +33,7 @@ class SendTypeOption(discord.Option):
 class CampusOption(discord.Option):
     def __init__(self):
         super().__init__(str, choices=['野田', '葛飾', '神楽坂'], description="キャンパスを選択してください。")
+
+class TrainingOption(discord.Option):
+    def __init__(self):
+        super().__init__(str, choices=["前曲", "中曲", "メイン曲", "無し"], description="練習曲を選択してください。")

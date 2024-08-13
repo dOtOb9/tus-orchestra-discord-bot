@@ -13,25 +13,30 @@ class deleteMessageView(discord.ui.View):
 #================================================================================================================
 
 class deleteMessageButton(discord.ui.Button):
-    def __init__(self, **kwargs) -> None:
-        super().__init__(**kwargs)
+    def __init__(self, delete_message=None, row=4, disabled=False) -> None:
+        super().__init__(row=row, disabled=disabled)
         self.style = discord.ButtonStyle.danger
         self.label = "削除"
+        self.delete_message = delete_message
 
     async def callback(self, interaction):
-        await interaction.response.send_modal(VerifydeleteMessageModal())
+        if self.delete_message == None:
+            self.delete_message = interaction.message
+
+        await interaction.response.send_modal(VerifydeleteMessageModal(delete_message=self.delete_message))
 
 #----------------------------------------------------------------------------------------------------------------
         
 class VerifydeleteMessageModal(discord.ui.Modal):
-    def __init__(self) -> None:
+    def __init__(self, delete_message) -> None:
         super().__init__(title='削除確認フォーム')
+        self.delete_message = delete_message
 
         self.add_item(discord.ui.InputText(label="削除する場合は、`DELETE`と入力してください。", placeholder="DELETE"))
 
     async def callback(self, interaction):
         if self.children[0].value == "DELETE":
-            await interaction.message.delete()
+            await self.delete_message.delete()
             await interaction.response.send_message("メッセージを削除しました。", ephemeral=True)
         else:
             await interaction.response.send_message("削除を拒否しました。", ephemeral=True)

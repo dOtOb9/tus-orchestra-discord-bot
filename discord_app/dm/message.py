@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import discord
 
 from discord_app.verify_attend import AttendAuthButton
+from discord_app.status import UserStatusButton
 from discord_app.dm.ui import viewSendListButton
 
 #====================================================================================================
@@ -34,12 +35,27 @@ class ActivityTime():
     def set_meeting(self, minutes : int):
         self.meeting = self.start - timedelta(minutes=minutes)
 
+#=====================================================================================================
+
+class ActivityTimeSlots():
+    def __init__(self, first: str, second: str, third: str, forth: str):
+
+        for slot in [first, second, third, forth]:
+            if slot == "無し":
+                slot = ""
+
+        self.first = first
+        self.second = second
+        self.third = third
+        self.forth = forth
+
 
 #=====================================================================================================
 
 class AcrivityDetails():
-    def __init__(self, year: int = None, month: int = None, day: int = None):
-        self.time = ActivityTime(year=year, month=month, day=day)
+    def __init__(self, time: ActivityTime, time_slots: ActivityTimeSlots):
+        self.time = time
+        self.time_slots = time_slots
         self.tutti = False
         self.place: str = None
         self.title: str = None
@@ -161,10 +177,11 @@ class DmMessage():
             return self.view
 
 
-        self.view.add_item(viewSendListButton(send_list_embed=self.send_list_embed, disabled = self.send_type == "Bcc"))
+        self.view.add_item(viewSendListButton(send_list_embed=self.send_list_embed, row=0, disabled = self.send_type == "Bcc"))
         
         if self.attend_type:
-            self.view.add_item(AttendAuthButton())
+            self.view.add_item(AttendAuthButton(row=1))
+            self.view.add_item(UserStatusButton(row=1))
 
         
         self.view_editted = True

@@ -1,5 +1,6 @@
 import discord
 from os import getenv
+from datetime import datetime
 
 
 from discord_app.delete import deleteMessageView
@@ -23,10 +24,17 @@ class AttendAuthModal(discord.ui.Modal):
         self.add_item(discord.ui.InputText(label="認証コード", placeholder="半角数字4桁で入力してください。", min_length=4, max_length=4))
 
     async def callback(self, interaction):
+        now = datetime.now()
+        one_pm = now.replace(hour=13, minute=0, second=0, microsecond=0) # 13時
+        
+        time_slots = "午前" if now < one_pm else "午後"
+        
+
         json_data = {
             "mode": "auth_attend",
             "id": str(interaction.user.id),
             "code": self.children[0].value,
+            "time_slots": time_slots,
         }
 
         await interaction.response.send_message("認証中...", ephemeral=True)
