@@ -4,7 +4,9 @@ from os import getenv
 
 from discord_app.bot import bot
 from discord_app.delete import deleteMessageView
+from discord_app.status import UserStatusButton
 from gas.get import user_info
+        
         
 
 @bot.user_command(name="ユーザー情報を取得する")
@@ -70,4 +72,7 @@ async def get_user_info(ctx, member: discord.Member):
         icon_url=getenv("APPS_SCRIPT_ICON_URL"),
     )
 
-    await author.send(embed=embed, view=deleteMessageView())
+    view=deleteMessageView()
+    view.add_item(UserStatusButton())   
+
+    await author.send(embed=embed, view=view)

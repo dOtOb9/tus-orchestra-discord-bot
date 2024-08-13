@@ -26,6 +26,22 @@ class KeyView(discord.ui.View):
 
 #================================================================================================================
 
+class KeyEmbed(discord.Embed):
+    def __init__(self, author: discord.Member, title: str, description: str="", colour: discord.Color=None) -> None:
+        super().__init__(
+            title=title,
+            description=description,
+            timestamp=dt.datetime.now(),
+            colour=colour
+        )
+
+        self.set_author(
+            name=author.display_name, 
+            icon_url=author.display_avatar,
+            url=author.jump_url,
+        )
+
+#=================================================================================================================
 
 class KeyButton(discord.ui.Button):
     def __init__(self, style: discord.ButtonStyle, label: str, row: int) -> None:
@@ -33,14 +49,78 @@ class KeyButton(discord.ui.Button):
         self.label = label
 
     async def callback(self, interaction):
-        await interaction.response.send_modal(KeyModal(pre_button_label=self.label, pre_view=self.view))
+        try:
+            await self.view.message.edit(view=discord.ui.View()) # Viewを削除
+        except discord.errors.HTTPException: # 既に削除されている場合
+            pass
 
+        response_interaction =  await interaction.channel.send(view=KeyView(),embed=KeyEmbed(author=interaction.user, title=self.label))
+        await interaction.response.send_message("このメッセージはあなただけに表示されています。\n以下のボタンから、メッセージの編集ができます。", ephemeral=True, view=KeyEditView(response_interaction=response_interaction))
+
+#=================================================================================================================
+
+class KeyEditView(discord.ui.View):
+    def __init__(self, response_interaction: discord.Interaction) -> None:
+        super().__init__(timeout=None)
+
+        self.message_id = response_interaction.id
+
+        self.add_item(KeyHighlightButton())
+        self.add_item(KeyMessageEditButton())
+        self.add_item(KeyMessageDeleteButton())
+
+#=================================================================================================================
+
+class KeyMessageDeleteButton(discord.ui.Button):
+    def __init__(self) -> None:
+        super().__init__(style=discord.ButtonStyle.danger, label="削除")
+
+    async def callback(self, interaction):
+        self.view.disable_all_items()
+
+        message = await interaction.channel.fetch_message(self.view.message_id)
+
+        await message.edit(embeds=[])
+        await interaction.response.edit_message(view=self.view)
+
+
+#=================================================================================================================
+
+class KeyMessageEditButton(discord.ui.Button):
+    def __init__(self) -> None:
+        super().__init__(style=discord.ButtonStyle.primary, label="編集")
+
+    async def callback(self, interaction):
+
+        message = await interaction.channel.fetch_message(self.view.message_id)
+
+        await interaction.response.send_modal(KeyModal(pre_button_label=message.embeds[0].title, message=message))
+
+#=================================================================================================================
+
+class KeyHighlightButton(discord.ui.Button):
+    def __init__(self) -> None:
+        super().__init__(style=discord.ButtonStyle.success, label="🌞強調")
+        self.state = True
+
+    async def callback(self, interaction):
+        message = await interaction.channel.fetch_message(self.view.message_id)
+        message.embeds[0].colour = discord.Color.green() if self.state else discord.Color.default()
+
+        self.state = not self.state
+
+        self.label = "🌞強調" if self.state else "🌚非強調"
+        self.style = discord.ButtonStyle.success if self.state else discord.ButtonStyle.gray
+
+        await message.edit(embeds=message.embeds)
+        await interaction.response.edit_message(view=self.view)
+
+#=================================================================================================================
 
 class KeyModal(discord.ui.Modal):
-    def __init__(self, pre_button_label: str, pre_view: discord.ui.View, title: str = '部屋開閉連絡') -> None:
+    def __init__(self, pre_button_label: str, message: discord.Message, title: str = '部屋開閉連絡') -> None:
         super().__init__(title=title)
-        self.pre_view = pre_view
-
+        self.message = message
 
         self.add_item(discord.ui.InputText(
             value=pre_button_label,
@@ -58,25 +138,11 @@ class KeyModal(discord.ui.Modal):
 
     
     async def callback(self, interaction):
-        text = self.children[0].value
-        description = self.children[1].value
+        self.message.embeds[0].title = self.children[0].value
+        self.message.embeds[0].description = self.children[1].value
 
-        key_embed = discord.Embed(
-            title=text,
-            description=description,
-            timestamp=dt.datetime.now(),
-        )
-
-        key_embed.set_author(
-            name=interaction.user.display_name, 
-            icon_url=interaction.user.display_avatar,
-            url=interaction.user.jump_url,
-        )
-
-
-        await interaction.response.edit_message(view=discord.ui.View()) # Viewを削除
-
-        await interaction.channel.send(view=self.pre_view, embed=key_embed)
+        await self.message.edit(embeds=self.message.embeds)
+        await interaction.response.send_message("メッセージを編集しました。", ephemeral=True)
 
 
 #================================================================================================================

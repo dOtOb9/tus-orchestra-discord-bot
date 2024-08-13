@@ -2,8 +2,8 @@ import discord
 
 
 class viewSendListButton(discord.ui.Button):
-    def __init__(self, label="送信先を表示", disabled=False, send_list_embed=None, covered=True) -> None:
-        super().__init__(label=label, disabled=disabled)
+    def __init__(self, label="送信先を表示", row=0, disabled=False, send_list_embed=None, covered=True) -> None:
+        super().__init__(label=label, row=row, disabled=disabled)
         self.covered = covered
         self.send_list_embed = send_list_embed
 
@@ -13,10 +13,10 @@ class viewSendListButton(discord.ui.Button):
             self.label = "送信先を非表示"
             new_embeds.append(self.send_list_embed)
 
-            await interaction.response.edit_message(embeds=new_embeds, view=self.view)
+            await interaction.response.edit_message(embeds=new_embeds)
         else:
             self.label = "送信先を表示"
 
-            await interaction.response.edit_message(embeds=new_embeds, view=self.view)
+            await interaction.response.edit_message(embeds=new_embeds)
 
         self.covered = not self.covered

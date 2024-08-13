@@ -5,13 +5,14 @@ import discord
 from discord_app.bot import bot
 from discord_app.dm.message import DmMessage
 from discord_app.dm.ui import viewSendListButton
-from discord_app.delete import deleteMessageView, deleteMessageButton
+from discord_app.delete import deleteMessageView
 from discord_app.verify_attend import AttendAuthButton 
+from discord_app.status import UserStatusButton
 from gas.get import can_send_activity_dm
 from gas.post import generate_activity_date
 
 
-class sendButton(discord.ui.Button):
+class SendButton(discord.ui.Button):
     def __init__(self, dm_message: DmMessage, label: str = None, style: discord.ButtonStyle = discord.ButtonStyle.gray, emoji: str = None, row: int = None) -> None:
         super().__init__(label=label, style=style, emoji=emoji, row=row)
         self.dm_message = dm_message
@@ -23,7 +24,10 @@ class sendButton(discord.ui.Button):
         await interaction.response.edit_message(view=self.view)
 
         if self.dm_message.attend_type:
-            await generate_activity_date(date_text=self.dm_message.activity.time.start.strftime("%Y/%m/%d"), is_tutti=self.dm_message.activity.tutti) # GASと連携
+            await generate_activity_date(date_text=self.dm_message.activity.time.start.strftime("%Y/%m/%d"), 
+                                         time_slots=self.dm_message.activity.time_slots, 
+                                         is_tutti=self.dm_message.activity.tutti
+                                         ) # GASと連携
 
         for member in self.dm_message.send_list: 
             await member.send(embeds=self.dm_message.embeds, 
@@ -39,12 +43,12 @@ class SendDmView(discord.ui.View):
         self.timeout = 60*60*24*30 # 30日間有効
         self.disable_on_timeout = True
 
-        self.add_item(viewSendListButton(label="送信先を非表示", disabled=True))
-        self.add_item(deleteMessageButton(row=4))
-        self.add_item(sendButton(label="送信する", emoji="📧", row=4, style=discord.ButtonStyle.success, dm_message=dm_message))
+        self.add_item(viewSendListButton(label="送信先を非表示", row=0, disabled=True))
+        self.add_item(SendButton(label="送信する", emoji="📧", row=4, style=discord.ButtonStyle.success, dm_message=dm_message))
 
         if dm_message.attend_type:
-            self.add_item(AttendAuthButton(disabled=True))
+            self.add_item(AttendAuthButton(disabled=True, row=1))
+            self.add_item(UserStatusButton(disabled=True, row=1))
         
 
 #================================================================================================================
