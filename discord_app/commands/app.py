@@ -55,7 +55,7 @@ async def key(ctx):
 
     pre_view.disable_all_items()
 
-    pre_view.add_item(ChannelSendButton(view=KeyView(), embed=start_embed))
+    pre_view.add_item(ChannelSendButton(send_view=KeyView(), embed=start_embed))
 
     await ctx.response.send_message(view=pre_view, embed=start_embed, ephemeral=True)
 
