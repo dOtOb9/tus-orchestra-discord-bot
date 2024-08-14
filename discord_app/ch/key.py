@@ -32,7 +32,7 @@ class KeyEmbed(discord.Embed):
             title=title,
             description=description,
             timestamp=dt.datetime.now(),
-            colour=colour if colour == None else discord.Colour.default(), 
+            colour=discord.Colour.default() if colour == None else colour, 
         )
 
         self.set_author(
