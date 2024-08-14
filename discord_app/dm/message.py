@@ -181,7 +181,7 @@ class DmMessage():
         
         if self.attend_type:
             self.view.add_item(AttendAuthButton(row=1))
-            self.view.add_item(UserStatusButton(row=1))
+            self.view.add_item(UserStatusButton(row=1, date_text=self.activity.time.start.strftime("%Y%m%d")))
 
         
         self.view_editted = True
