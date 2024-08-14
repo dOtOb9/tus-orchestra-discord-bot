@@ -27,12 +27,12 @@ class KeyView(discord.ui.View):
 #================================================================================================================
 
 class KeyEmbed(discord.Embed):
-    def __init__(self, author: discord.Member, title: str, description: str="", colour: discord.Color=None) -> None:
+    def __init__(self, author: discord.Member, title: str, description: str="", colour: discord.Colour=None) -> None:
         super().__init__(
             title=title,
             description=description,
             timestamp=dt.datetime.now(),
-            colour=colour if colour == None else discord.Color.default(), 
+            colour=colour if colour == None else discord.Colour.default(), 
         )
 
         self.set_author(
