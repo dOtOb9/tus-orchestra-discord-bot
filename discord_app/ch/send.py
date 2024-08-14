@@ -15,4 +15,4 @@ class ChannelSendButton(discord.ui.Button):
 
         self.disabled = True
         self.label = "表示済み"
-        await interaction.response.edit_message(view=self.view)
+        await interaction.response.edit_message(view=self.send_view)
