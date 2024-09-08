@@ -20,16 +20,19 @@ async def user_post(json_data):
     
 #-----------------------------------------------------------------------------------
 
-async def generate_activity_date(date_text, time_slots, is_tutti):
-    if is_tutti:
-        mode = 'generate_tutti_date'
-    else:
-        mode = 'generate_activity_date'
+async def generate_activity_date(date_text, time_slots, is_tutti, party: str):
 
     json_data = {
-        "mode": mode,
-        "date_text": date_text,
-        "time_slots": str(time_slots),
+        "mode": 'generate_activity_date',
+        "date": date_text,
+        "tutti": str(is_tutti).upper(),
+        "slots": [
+            time_slots.first,
+            time_slots.second,
+            time_slots.third,
+            time_slots.forth,
+            ],
+        "section": party,
     }
 
     requests.post(URL, headers=headers, data=json.dumps(json_data))

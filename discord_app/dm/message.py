@@ -61,6 +61,7 @@ class AcrivityDetails():
         self.title: str = None
         self.description: str = None
         self.date_text: str = None
+        self.party: str = None
 
 
     def set_activity_embed(self, user: discord.User) -> discord.Embed:
@@ -172,7 +173,7 @@ class DmMessage():
         return self.send_list_embed
     
 
-    def set_view(self):
+    def set_view(self, user: discord.User):
         if self.view_editted:
             return self.view
 
@@ -181,7 +182,7 @@ class DmMessage():
         
         if self.attend_type:
             self.view.add_item(AttendAuthButton(row=1))
-            self.view.add_item(UserStatusButton(row=1, date_text=self.activity.time.start.strftime("%Y%m%d")))
+            self.view.add_item(UserStatusButton(row=1, user_id=user.id, date_text=self.activity.time.start.strftime("%Y%m%d")))
 
         
         self.view_editted = True

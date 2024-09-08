@@ -26,12 +26,13 @@ class SendButton(discord.ui.Button):
         if self.dm_message.attend_type:
             await generate_activity_date(date_text=self.dm_message.activity.time.start.strftime("%Y/%m/%d"), 
                                          time_slots=self.dm_message.activity.time_slots, 
-                                         is_tutti=self.dm_message.activity.tutti
+                                         is_tutti=self.dm_message.activity.tutti,
+                                         party=self.dm_message.activity.party,
                                          ) # GASと連携
 
         for member in self.dm_message.send_list: 
             await member.send(embeds=self.dm_message.embeds, 
-                              view=self.dm_message.set_view(),
+                              view=self.dm_message.set_view(member),
                               )
             
 #================================================================================================================
@@ -71,9 +72,11 @@ async def verify_send_dm_text(dm_message: DmMessage, interaction: discord.Intera
 
 #================================================================================================================
 
-async def verify_gas_send_dm(party: list, dm_message: DmMessage, interaction: discord.Interaction):
+async def verify_gas_send_dm(party: str, dm_message: DmMessage, interaction: discord.Interaction):
     await interaction.response.send_message("送信先を取得しています...", ephemeral=True)
-    json_data =  await can_send_activity_dm(party)
+    json_data =  await can_send_activity_dm(party, dm_message.activity.time_slots)
+
+    dm_message.activity.party = party
 
 
     # 例外処理

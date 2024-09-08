@@ -17,6 +17,8 @@ class viewSendListButton(discord.ui.Button):
         else:
             self.label = "送信先を表示"
 
+            new_embeds.pop()
+
             await interaction.response.edit_message(embeds=new_embeds)
 
         self.covered = not self.covered
