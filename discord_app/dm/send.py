@@ -31,10 +31,11 @@ class SendButton(discord.ui.Button):
                                          ) # GASと連携
 
         for member in self.dm_message.send_list: 
+            view=self.dm_message.set_view(member)
             await member.send(embeds=self.dm_message.embeds, 
-                              view=self.dm_message.set_view(member),
+                              view=view,
                               )
-            
+
 #================================================================================================================
 
 class SendDmView(discord.ui.View):
