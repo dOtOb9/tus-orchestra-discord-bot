@@ -174,17 +174,13 @@ class DmMessage():
     
 
     def set_view(self, user: discord.User):
-        if self.view_editted:
-            return self.view
+        view = discord.ui.View(disable_on_timeout=True, timeout=60 * 60 * 24 * 30) # 30日間
 
-
-        self.view.add_item(viewSendListButton(send_list_embed=self.send_list_embed, row=0, disabled = self.send_type == "Bcc"))
+        view.add_item(viewSendListButton(send_list_embed=self.send_list_embed, row=0, disabled = self.send_type == "Bcc"))
         
         if self.attend_type:
-            self.view.add_item(AttendAuthButton(row=1))
-            self.view.add_item(UserStatusButton(row=1, user_id=user.id, date_text=self.activity.time.start.strftime("%Y%m%d")))
+            view.add_item(AttendAuthButton(row=1))
+            view.add_item(UserStatusButton(row=1, user_id=user.id, date_text=self.activity.time.start.strftime("%Y%m%d")))
 
         
-        self.view_editted = True
-
-        return self.view
+        return view
