@@ -75,9 +75,14 @@ async def verify_send_dm_text(dm_message: DmMessage, interaction: discord.Intera
 
 async def verify_gas_send_dm(party: str, dm_message: DmMessage, interaction: discord.Interaction):
     await interaction.response.send_message("送信先を取得しています...", ephemeral=True)
-    json_data =  await can_send_activity_dm(party, dm_message.activity.time_slots)
+    json_data =  await can_send_activity_dm(party)
 
-    dm_message.activity.party = party
+    
+    try:
+        dm_message.activity.party = party
+        
+    except AttributeError: # 活動連絡ではない場合
+        pass
 
 
     # 例外処理
