@@ -77,11 +77,12 @@ class KeyMessageDeleteButton(discord.ui.Button):
 
     async def callback(self, interaction):
         self.view.disable_all_items()
+        await interaction.response.edit_message(view=self.view)
 
         message = await interaction.channel.fetch_message(self.view.message_id)
 
-        await message.edit(embeds=[])
-        await interaction.response.edit_message(view=self.view)
+        await message.delete()
+        await interaction.channel.send('削除済み',view=KeyView())
 
 
 #=================================================================================================================
