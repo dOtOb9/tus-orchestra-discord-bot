@@ -20,10 +20,10 @@ async def user_info(id):
     
 #-----------------------------------------------------------------------------------
     
-async def can_send_activity_dm(type):
+async def can_send_activity_dm(section):
     params = {
         "mode": "can_send_activity_dm",
-        "type": type,
+        "section": section,
     }
 
     response = requests.get(URL, params=params)
