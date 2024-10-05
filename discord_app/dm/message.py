@@ -133,7 +133,7 @@ class ActivityDetails():
     def set_verify_attendance_embed(self, id) -> discord.Embed:
         verify_attendance_embed = discord.Embed(
             title = "出席認証",
-            url = getenv("VERIFY_ATTENDANCE_URL") + "?id=" + id,
+            url = getenv("VERIFY_ATTENDANCE_URL") + "?id=" + str(id),
             colour = discord.Color.from_rgb(153, 0, 153), # 紫色
         )
 
