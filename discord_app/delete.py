@@ -32,10 +32,10 @@ class VerifydeleteMessageModal(discord.ui.Modal):
         super().__init__(title='削除確認フォーム')
         self.delete_message = delete_message
 
-        self.add_item(discord.ui.InputText(label="削除する場合は、`DELETE`と入力してください。", placeholder="DELETE"))
+        self.add_item(discord.ui.InputText(label="削除する場合は、`削除`と入力してください。", placeholder="削除"))
 
     async def callback(self, interaction):
-        if self.children[0].value == "DELETE":
+        if self.children[0].value == "削除":
             await self.delete_message.delete()
             await interaction.response.send_message("メッセージを削除しました。", ephemeral=True)
         else:

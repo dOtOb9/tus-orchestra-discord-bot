@@ -6,7 +6,6 @@ from discord_app.bot import bot
 from discord_app.dm.message import DmMessage
 from discord_app.dm.ui import viewSendListButton
 from discord_app.delete import deleteMessageView
-from discord_app.verify_attend import AttendAuthButton 
 from discord_app.status import UserStatusButton
 from gas.get import can_send_activity_dm
 from gas.post import generate_activity_date
@@ -23,18 +22,18 @@ class SendButton(discord.ui.Button):
         self.label = "送信済み"
         await interaction.response.edit_message(view=self.view)
 
-        if self.dm_message.attend_type:
+        if self.dm_message.activity != None:
             await generate_activity_date(date_text=self.dm_message.activity.time.start.strftime("%Y/%m/%d"), 
                                          time_slots=self.dm_message.activity.time_slots, 
-                                         is_tutti=self.dm_message.activity.tutti,
-                                         party=self.dm_message.activity.party,
+                                         section=self.dm_message.activity.section,
                                          ) # GASと連携
 
         for member in self.dm_message.send_list: 
             view=self.dm_message.set_view(member)
-            await member.send(embeds=self.dm_message.embeds, 
-                              view=view,
-                              )
+            await member.send(
+                embeds=self.dm_message.embeds, 
+                view=view,
+            )
 
 #================================================================================================================
 
@@ -48,8 +47,7 @@ class SendDmView(discord.ui.View):
         self.add_item(viewSendListButton(label="送信先を非表示", row=0, disabled=True))
         self.add_item(SendButton(label="送信する", emoji="📧", row=4, style=discord.ButtonStyle.success, dm_message=dm_message))
 
-        if dm_message.attend_type:
-            self.add_item(AttendAuthButton(disabled=True, row=1))
+        if dm_message.activity != None:
             self.add_item(UserStatusButton(disabled=True, row=1))
         
 
@@ -73,17 +71,9 @@ async def verify_send_dm_text(dm_message: DmMessage, interaction: discord.Intera
 
 #================================================================================================================
 
-async def verify_gas_send_dm(party: str, dm_message: DmMessage, interaction: discord.Interaction):
+async def verify_gas_send_dm(dm_message: DmMessage, interaction: discord.Interaction):
     await interaction.response.send_message("送信先を取得しています...", ephemeral=True)
-    json_data =  await can_send_activity_dm(party)
-
-    
-    try:
-        dm_message.activity.party = party
-        
-    except AttributeError: # 活動連絡ではない場合
-        pass
-
+    json_data =  await can_send_activity_dm(dm_message.activity.section)
 
     # 例外処理
     #----------------------------------------------------------------

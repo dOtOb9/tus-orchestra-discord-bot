@@ -4,13 +4,7 @@ from gas.post import user_post
 import discord
 
 #================================================================================================
-        
-@bot.event
-async def on_member_update(before, after):
-    if after.bot: return
-    await member_update(after)
 
-#-----------------------------------------------------------------------------------
             
 @bot.event
 async def on_ready():
@@ -18,25 +12,28 @@ async def on_ready():
 
 
 #================================================================================================
-async def member_update(member):
-    div_point = member.display_name.find(".")
+@bot.event
+async def member_update(before, after):
+    if after.bot: return
+
+    div_point = after.display_name.find(".")
 
     grade = ""
-    for role in member.roles:
+    for role in after.roles:
         if role.name in ["1年", "2年", "3年", "4年"]:
             grade = role.name[0]
 
     name = ""
     part = ""
     if div_point != -1:
-        part = member.display_name[:div_point]
-        name = member.display_name[div_point+1:]
+        part = after.display_name[:div_point]
+        name = after.display_name[div_point+1:]
 
     json_data = {
         "mode": "edit_user",
         "name": name,
         "part": part,
-        "id": str(member.id),
+        "id": str(after.id),
         "grade": grade,
     }
 

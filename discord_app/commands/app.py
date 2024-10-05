@@ -5,11 +5,11 @@ from discord_app.bot import bot
 from discord_app.general_embed import generalMessageModal
 from discord_app.ch.key import KeyView
 from discord_app.ch.send import ChannelSendButton
-from discord_app.dm.message import ActivityTime, ActivityTimeSlots, AcrivityDetails, DmMessage
+from discord_app.dm.message import ActivityTime, ActivityTimeSlots, ActivityDetails, DmMessage
 from discord_app.dm.activity import ActivityModal
 from discord_app.preview import PreviewModal
 from discord_app.commands.user import get_user_info
-from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption, TrainingOption
+from discord_app.commands.components.options import YearOption, MonthOption, DayOption, HourOption, MinuteOption, SendTypeOption, TrainingOption, SectionOption
 
 from gas.post import can_send_activity_dm
 
@@ -76,7 +76,7 @@ async def activity(
     second_training: TrainingOption(),
     third_training: TrainingOption(),
     forth_training: TrainingOption(),
-    tutti: discord.Option(str, choices=["Yes", "No"], description="Tutti練習の場合は`Yes`、それ以外は`No`と入力してください。"),
+    section: SectionOption(),
     start_hour : HourOption(add_desc="開始時間が") = 10, 
     start_minute : MinuteOption(add_desc="開始時間が") = 0, 
     finish_hour : HourOption(add_desc="終了時間が") = 16, 
@@ -90,7 +90,7 @@ async def activity(
     ):
 
     # Tutti練習の場合、開始時間と終了時間のデフォルト値を変更
-    if tutti == "Yes" and open_hour == 9 and open_minute == 0 and close_hour == 18 and close_minute == 0:
+    if section == "Tutti" and open_hour == 9 and open_minute == 0 and close_hour == 18 and close_minute == 0:
         open_hour = 7
         close_hour = 21
         prepare_minutes = 30
@@ -108,7 +108,7 @@ async def activity(
 
     time_slots = ActivityTimeSlots(first=first_training, second=second_training, third=third_training, forth=forth_training)
 
-    dm_message.activity = AcrivityDetails(time=activity_time, time_slots=time_slots)
+    dm_message.activity = ActivityDetails(time=activity_time, time_slots=time_slots, section=section)
     dm_message.send_type = send_type
 
     #------------------------------------------------------------------------------------------------------
@@ -120,8 +120,7 @@ async def activity(
 
     #-----------------------------------------------------------------------------------------------------
     # Tuttiの設定
-    if is_tutti := tutti == 'Yes':
-        dm_message.activity.tutti = is_tutti
+    if section == 'Tutti':
         dm_message.activity.title = "Tutti"
         dm_message.activity.place = "野田キャンパス多目的トレーニングホール"
 
@@ -144,19 +143,6 @@ async def alert(
     send_type: SendTypeOption() = "Cc"
     ):
     await ctx.send_modal(generalMessageModal(title="緊急連絡フォーム", mode='dm', send_type = send_type, colour=discord.Color.from_rgb(r=255, g=0, b=0))) # 赤色
-
-#-------------------------------------------------------------
-    
-set = bot.create_group("set")
-
-#-------------------------------------------------------------
-    
-@set.command(description="乗り番連絡DMを受信するかどうかを設定します。")
-async def activity_dm(ctx, types: discord.Option(str, choices=["受信する", "受信しない"])):
-    Bool = types == "受信する"
-
-    await ctx.respond(f"設定を「{types}」に更新しました。\n\n設定を確認するには、`/status`と送信してください。", ephemeral=True)
-    await can_send_activity_dm(ctx.user.id, Bool)
 
 #-------------------------------------------------------------
 

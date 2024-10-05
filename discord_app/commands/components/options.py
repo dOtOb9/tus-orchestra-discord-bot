@@ -37,3 +37,7 @@ class CampusOption(discord.Option):
 class TrainingOption(discord.Option):
     def __init__(self):
         super().__init__(str, choices=["前曲", "中曲", "メイン曲", "無し"], description="練習曲を選択してください。")
+
+class SectionOption(discord.Option):
+    def __init__(self):
+        super().__init__(str, choices=['弦楽器','木管楽器', '金管楽器', '打楽器', 'Tutti', '無し'], description="出欠表に反映するセクションを選択してください。")

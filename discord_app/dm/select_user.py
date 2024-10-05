@@ -13,7 +13,7 @@ class SelectSendView(discord.ui.View):
         self.timeout = None
 
 
-    @discord.ui.button(label="全員", emoji="👥", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="全員", emoji="👥")
     async def all_callback(self, button, interaction):
         send_list = []
         for member in bot.guilds[0].members:
@@ -23,52 +23,45 @@ class SelectSendView(discord.ui.View):
 
         await verify_send_dm_text(dm_message=self.dm_message, interaction=interaction)
 
-    @discord.ui.button(label="ロールで決める", emoji="👑", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="ロールで決める", emoji="👑")
     async def role_callback(self, button, interaction):
         await interaction.response.send_message(
             view=SelectRolesView(dm_message=self.dm_message),
             ephemeral=True
         )
 
-    @discord.ui.button(label="チャンネルで決める", emoji="📢", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="チャンネルで決める", emoji="📢")
     async def channel_callback(self, button, interaction):
         await interaction.response.send_message(
             view=SelectChannelView(dm_message=self.dm_message),
             ephemeral=True
         )
-    @discord.ui.button(label="個人で決める", emoji="👤", style=discord.ButtonStyle.primary)
+    @discord.ui.button(label="個人で決める", emoji="👤")
     async def personal_callback(self, button, interaction):
         await interaction.response.send_message(
             view=SelectUsersView(dm_message=self.dm_message),
             ephemeral=True
         )
 
-    @discord.ui.button(label="活動連絡DMを受け取る弦楽器団員", emoji="🎻",row=1)
-    async def string_callback(self, button, interaction):
-        await verify_gas_send_dm(party='strings', interaction=interaction, dm_message=self.dm_message)
+    #------------------------------------------------------
 
-    @discord.ui.button(label="活動連絡DMを受け取る金管楽器団員", emoji="🎺",row=2)
-    async def wind_callback(self, button, interaction):
-        await verify_gas_send_dm(party='brass', interaction=interaction, dm_message=self.dm_message)
-
-    @discord.ui.button(label="活動連絡DMを受け取る木管楽器団員", emoji="🎹",row=2)
-    async def woodwind_callback(self, button, interaction):
-        await verify_gas_send_dm(party='woodwind', interaction=interaction, dm_message=self.dm_message)
-
-    @discord.ui.button(label="活動連絡DMを受け取る打楽器団員", emoji="🥁",row=2)
-    async def percussion_callback(self, button, interaction):
-        await verify_gas_send_dm(party='percussion', interaction=interaction, dm_message=self.dm_message)
-
-    @discord.ui.button(label="活動連絡DMを受け取る管弦楽団員", emoji="🎼",row=3)
-    async def orchestra_callback(self, button, interaction):
-        await verify_gas_send_dm(party='orchestra', interaction=interaction, dm_message=self.dm_message)
-
-    @discord.ui.button(label="カスタム列で指定する", emoji="⭐", row=4)
-    async def custom_callback(self, button, interaction):
-        await verify_gas_send_dm(party='custom', interaction=interaction, dm_message=self.dm_message)
-
-#-------------------------------------------------------------
+    async def add_activity_members_button(self):
+        if (self.dm_message.activity.section == "無し"): 
+            return
         
+        button = discord.ui.Button(
+            label=self.dm_message.activity.section + "の乗り番の団員", 
+            emoji="🎼",
+            style=discord.ButtonStyle.primary
+        )
+        button.callback = self.activity_members_callback
+        self.add_item(button)
+
+    async def activity_members_callback(self, interaction):
+        await verify_gas_send_dm(dm_message=self.dm_message, interaction=interaction)
+
+#--------------------------------------------------------------
+
 class SelectChannelView(discord.ui.View):
     def __init__(self, dm_message: DmMessage) -> None:
         super().__init__()
@@ -83,7 +76,12 @@ class SelectChannelView(discord.ui.View):
                 for channel in channel.channels:
                     send_list.extend(find_member_in_channel(channel))
 
-            send_list.extend(find_member_in_channel(channel))
+            try: 
+                send_list.extend(find_member_in_channel(channel))
+
+            except TypeError:
+                await interaction.response.send_message("メンバーが取得できないチャンネルが含まれています。", ephemeral=True)
+                return
 
         self.dm_message.send_list = send_list
 

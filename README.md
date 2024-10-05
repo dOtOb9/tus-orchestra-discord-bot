@@ -4,10 +4,14 @@
 - 東京理科大学管弦楽団内でのコミュニケーションを円滑にする機能を実装しています。
 
 # Environmental Variables
-| name | description |
-|------|-------|
-| DISCORD_TOKEN |  |
-| SPREADSHEET_EXEC_URL |  |
+| name                      | description |
+|---------------------------|-------|
+| DISCORD_TOKEN             |  |
+| SPREADSHEET_EXEC_URL      |  |
+| GOOGLE_MAP_ICON_URL       |  |
+| GOOGLE_CALENDAR_ICON_URL  |  |
+| VERIFY_ATTENDANCE_URL     |  |
+| SPREADSHEET_ICON_URL      |  |
 
 # Let's set up!
 ##  precondition

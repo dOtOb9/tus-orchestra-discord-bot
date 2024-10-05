@@ -26,12 +26,16 @@ class ActivityModal(discord.ui.Modal):
 
         self.dm_message.embeds = self.dm_message.activity.set_all_embeds(interaction.user)
 
-        if self.dm_message.activity.tutti:
-            await verify_gas_send_dm(party='orchestra', dm_message=self.dm_message, interaction=interaction)
+        select_send_view = SelectSendView(dm_message=self.dm_message)
+
+        await select_send_view.add_activity_members_button()
+
+        if self.dm_message.activity.section == 'tutti':
+            await verify_gas_send_dm(section='tutti', dm_message=self.dm_message, interaction=interaction)
         else:
             await interaction.response.send_message(
                 "送信先を選んでください。",
-                view=SelectSendView(dm_message=self.dm_message),
+                view=select_send_view,
                 ephemeral=True,
                 embeds=self.dm_message.embeds,
                 )

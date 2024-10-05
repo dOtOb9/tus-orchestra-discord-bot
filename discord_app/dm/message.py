@@ -4,7 +4,6 @@ from urllib.parse import quote
 from datetime import datetime, timedelta
 import discord
 
-from discord_app.verify_attend import AttendAuthButton
 from discord_app.status import UserStatusButton
 from discord_app.dm.ui import viewSendListButton
 
@@ -52,16 +51,15 @@ class ActivityTimeSlots():
 
 #=====================================================================================================
 
-class AcrivityDetails():
-    def __init__(self, time: ActivityTime, time_slots: ActivityTimeSlots):
+class ActivityDetails():
+    def __init__(self, time: ActivityTime, time_slots: ActivityTimeSlots, section: str):
         self.time = time
         self.time_slots = time_slots
-        self.tutti = False
+        self.section = section
         self.place: str = None
         self.title: str = None
         self.description: str = None
         self.date_text: str = None
-        self.party: str = None
 
 
     def set_activity_embed(self, user: discord.User) -> discord.Embed:
@@ -132,23 +130,35 @@ class AcrivityDetails():
             
         )
     
+    def set_verify_attendance_embed(self) -> discord.Embed:
+        verify_attendance_embed = discord.Embed(
+            title = "出席認証",
+            url = getenv("VERIFY_ATTENDANCE_URL"),
+            colour = discord.Color.from_rgb(153, 0, 153), # 紫色
+        )
+
+        return verify_attendance_embed.set_footer(
+            text = "出欠表",
+            icon_url = getenv("SPREADSHEET_ICON_URL"),
+        )
+    
 
     def set_all_embeds(self, user: discord.User)-> list:
         activity_embed = self.set_activity_embed(user=user)
         google_map_embed = self.set_google_map_embed()
         google_calendar_embed = self.set_google_calendar_embed()
+        verify_attendance_embed = self.set_verify_attendance_embed()
         
-        return [activity_embed, google_map_embed, google_calendar_embed]
+        return [activity_embed, google_map_embed, google_calendar_embed, verify_attendance_embed]
     
 #=====================================================================================================
     
 
 class DmMessage():
     def __init__(self):
-        self.attend_type: bool = False
         self.view = discord.ui.View(disable_on_timeout=True, timeout=60 * 60 * 24 * 30) # 30日間
         self.view_editted = False
-        self.activity: AcrivityDetails = None
+        self.activity: ActivityDetails = None
         self.send_type: str = None
         self.send_list: list= None
         self.embeds: list = None
@@ -178,9 +188,7 @@ class DmMessage():
 
         view.add_item(viewSendListButton(send_list_embed=self.send_list_embed, row=0, disabled = self.send_type == "Bcc"))
         
-        if self.attend_type:
-            view.add_item(AttendAuthButton(row=1))
+        if self.activity != None:
             view.add_item(UserStatusButton(row=1, user_id=user.id, date_text=self.activity.time.start.strftime("%Y%m%d")))
 
-        
         return view

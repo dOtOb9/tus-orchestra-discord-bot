@@ -26,18 +26,6 @@ async def get_user_info(ctx, member: discord.Member):
             timestamp=datetime.now()
         )
     else:
-        """
-        result_json には、以下のような情報が格納されています。
-        {
-            "practice_contact": -> 活動連絡を受信できるかどうか。True なら権限有り、False なら権限無し
-            "attend_status":    -> 出席率。0~1の小数で表されます。
-        }
-        """
-
-        if result_json["practice_contact"]:
-            practice_contact = "受信する"
-        else:
-            practice_contact = "受信しない"
 
         view_attend_code = "閲覧不可"
 
@@ -53,7 +41,6 @@ async def get_user_info(ctx, member: discord.Member):
             url=getenv("SPREADSHEET_URL"),
             fields=[
                 discord.EmbedField(name="📺出席コード閲覧", value=view_attend_code, inline=True),
-                discord.EmbedField(name="📧乗り番連絡", value=practice_contact, inline=True),
                 discord.EmbedField(name="📈通常練習", value=result_json['attend_status'], inline=False),
                 discord.EmbedField(name="📈Tutti練習", value=result_json['tutti_attend_status'], inline=False),
             ],
@@ -73,6 +60,5 @@ async def get_user_info(ctx, member: discord.Member):
     )
 
     view=deleteMessageView()
-    view.add_item(UserStatusButton())   
 
     await author.send(embed=embed, view=view)
