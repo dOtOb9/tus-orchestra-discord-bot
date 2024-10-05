@@ -130,10 +130,10 @@ class ActivityDetails():
             
         )
     
-    def set_verify_attendance_embed(self) -> discord.Embed:
+    def set_verify_attendance_embed(self, id) -> discord.Embed:
         verify_attendance_embed = discord.Embed(
             title = "出席認証",
-            url = getenv("VERIFY_ATTENDANCE_URL"),
+            url = getenv("VERIFY_ATTENDANCE_URL") + "?id=" + id,
             colour = discord.Color.from_rgb(153, 0, 153), # 紫色
         )
 
@@ -147,7 +147,7 @@ class ActivityDetails():
         activity_embed = self.set_activity_embed(user=user)
         google_map_embed = self.set_google_map_embed()
         google_calendar_embed = self.set_google_calendar_embed()
-        verify_attendance_embed = self.set_verify_attendance_embed()
+        verify_attendance_embed = self.set_verify_attendance_embed(user.id)
         
         return [activity_embed, google_map_embed, google_calendar_embed, verify_attendance_embed]
     
