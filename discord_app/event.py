@@ -13,7 +13,7 @@ async def on_ready():
 
 #================================================================================================
 @bot.event
-async def member_update(before, after):
+async def on_member_update(before, after):
     if after.bot: return
 
     div_point = after.display_name.find(".")
